@@ -1,0 +1,116 @@
+python-simplegeo-shared (1.9.30) lucid; urgency=low
+
+  [ Zooko ]
+  * tweak docs in setup.py
+
+  [ SimpleGeo Nerds ]
+
+ -- SimpleGeo Nerds <nerds@simplegeo.com>  Fri, 03 Dec 2010 19:15:18 +0000
+
+python-simplegeo-shared (1.9.29) lucid; urgency=low
+
+  [ Zooko ]
+  * copy in debian/rules from gnop project (minus filthy hack)
+  * fix flakes
+
+  [ SimpleGeo Nerds ]
+
+ -- SimpleGeo Nerds <nerds@simplegeo.com>  Fri, 03 Dec 2010 18:57:46 +0000
+
+python-simplegeo-shared (1.9.28) lucid; urgency=low
+
+  [ Zooko ]
+  * copy in Makefile from gnop project and modify it a bit
+
+  [ SimpleGeo Nerds ]
+
+ -- SimpleGeo Nerds <nerds@simplegeo.com>  Fri, 03 Dec 2010 18:42:37 +0000
+
+python-simplegeo-shared (1.9.27) lucid; urgency=low
+
+  [ Zooko ]
+  * see what happens if we don't override the cdbs install target
+
+  [ SimpleGeo Nerds ]
+
+ -- SimpleGeo Nerds <nerds@simplegeo.com>  Fri, 03 Dec 2010 18:33:07 +0000
+
+python-simplegeo-shared (1.9.25) lucid; urgency=low
+
+  [ Simple Geebus ]
+  * 
+
+  [ Zooko ]
+  * copy in the entire contents of gnop and delete the entire contents
+    of python-simplegeo-shared in order to see if the build works when
+    it is identical to the working gnop build, then I'll incrementa lly
+    change it back to simplegeo-shared and see when the build breaks Oh
+    except, gnop isn't open source. So I'll just delete the actual
+    bodies of the methods real quick...
+  * just changing something to watch it change
+  * random thing to make sure hudson notices pending has changed
+  * put python-simplegeo-shared back now that I figured out what was
+    wrong with the hudson config
+
+  [ SimpleGeo Nerds ]
+
+ -- SimpleGeo Nerds <nerds@simplegeo.com>  Fri, 03 Dec 2010 18:15:53 +0000
+
+python-simplegeo-shared (1.9.6) lucid; urgency=low
+
+  [ Zooko Ofsimplegeo ]
+  * don't express more precision than we actually have in version number
+    (the 3rd element is controlled by hudson not by source code)
+  * don't express more precision than we actually have in version number
+    (the 3rd element is controlled by hudson not by source code)
+
+  [ SimpleGeo Nerds ]
+
+ -- SimpleGeo Nerds <nerds@simplegeo.com>  Wed, 01 Dec 2010 23:24:18 +0000
+
+python-simplegeo-shared (1.9.4) lucid; urgency=low
+
+  [ Zooko Ofsimplegeo ]
+  * add docstring to make it clearer that this is (probably) the
+    server's fault
+  * loosen test wrt the exact error message...
+
+  [ SimpleGeo Nerds ]
+
+ -- SimpleGeo Nerds <nerds@simplegeo.com>  Wed, 01 Dec 2010 21:43:18 +0000
+
+python-simplegeo-shared (1.9.2) lucid; urgency=low
+
+  [ Zooko Ofsimplegeo ]
+  * version 1.9.0
+
+  [ SimpleGeo Nerds ]
+
+ -- SimpleGeo Nerds <nerds@simplegeo.com>  Wed, 01 Dec 2010 19:40:18 +0000
+
+python-simplegeo-shared (1.2.11) lucid; urgency=low
+
+  * UNRELEASED
+
+ -- SimpleGeo Nerds <nerds@simplegeo.com>  Tue, 30 Nov 2010 21:38:39 +0000
+
+python-simplegeo-shared (1.2.10) lucid; urgency=low
+
+  [ ansate ]
+  * added some more tests, fixed the old ones. removed a bunch of code
+
+  [ SimpleGeo Nerds ]
+
+ -- SimpleGeo Nerds <nerds@simplegeo.com>  Tue, 30 Nov 2010 21:37:42 +0000
+
+python-simplegeo-shared (0.9.1) unstable; urgency=low
+
+  * first working version
+
+ -- Zooko Wilcox-O'Hearn <zooko@simplegeo.com>  Sat, 22 Nov 2010 10:01:10 -0700
+	
+python-simplegeo-shared (0.9.0) unstable; urgency=low
+
+  * initial version
+
+ -- Zooko Wilcox-O'Hearn <zooko@simplegeo.com>  Sat, 12 Nov 2010 10:01:10 -0700
