@@ -1,3 +1,12 @@
+python-simplegeo-shared (1.11.5) lucid; urgency=low
+
+  [ Zooko Ofsimplegeo ]
+  * version bump
+
+  [ SimpleGeo Nerds ]
+
+ -- SimpleGeo Nerds <nerds@simplegeo.com>  Fri, 03 Dec 2010 21:54:37 +0000
+
 python-simplegeo-shared (1.9.30) lucid; urgency=low
 
   [ Zooko ]
