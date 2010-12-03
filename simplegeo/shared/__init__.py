@@ -6,7 +6,7 @@ from httplib2 import Http
 import oauth2 as oauth
 from urlparse import urljoin
 
-from jsonutil import jsonutil as json
+from pyutil import jsonutil as json
 
 # example: http://api.simplegeo.com/1.0/feature/abcdefghijklmnopqrstuvwyz.json
 

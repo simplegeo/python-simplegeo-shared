@@ -1,5 +1,5 @@
 import unittest
-from jsonutil import jsonutil as json
+from pyutil import jsonutil as json
 from simplegeo.shared import Client, APIError, DecodeError
 
 from decimal import Decimal as D
