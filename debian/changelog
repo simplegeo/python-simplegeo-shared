@@ -1,3 +1,12 @@
+python-simplegeo-shared (1.11.7) lucid; urgency=low
+
+  [ Zooko ]
+  * add TODO.rst
+
+  [ SimpleGeo Nerds ]
+
+ -- SimpleGeo Nerds <nerds@simplegeo.com>  Sat, 04 Dec 2010 00:31:26 +0000
+
 python-simplegeo-shared (1.11.6) lucid; urgency=low
 
   [ Ian Eure ]
