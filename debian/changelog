@@ -1,3 +1,12 @@
+python-simplegeo-shared (1.12.10) lucid; urgency=low
+
+  [ Zooko Ofsimplegeo ]
+  * copy in the general-purpose parts from places to shared
+
+  [ SimpleGeo Nerds ]
+
+ -- SimpleGeo Nerds <nerds@simplegeo.com>  Tue, 07 Dec 2010 22:12:46 +0000
+
 python-simplegeo-shared (1.11.8) lucid; urgency=low
 
   [ Simple Geebus ]
