@@ -65,7 +65,7 @@ class ClientTest(unittest.TestCase):
         mockhttp = mock.Mock()
         mockhttp.request.return_value = ({'status': '200', 'content-type': 'application/json', }, '{ "Hello": "I am a string. \xe2\x9d\xa4" }'.decode('utf-8'))
         self.client.http = mockhttp
-        res = self.client._request("http://thing", 'POST')
+        res = self.client._request("http://thing", 'POST')[1]
         self.failUnlessEqual(res, '{ "Hello": "I am a string. \xe2\x9d\xa4" }'.decode('utf-8'))
 
     def test_dont_Recordify_results(self):
@@ -78,7 +78,7 @@ class ClientTest(unittest.TestCase):
         mockhttp = mock.Mock()
         mockhttp.request.return_value = ({'status': '200', 'content-type': 'application/json', }, EXAMPLE_RECORD_JSONSTR)
         self.client.http = mockhttp
-        res = self.client._request("http://thing", 'POST')
+        res = self.client._request("http://thing", 'POST')[1]
         self.failUnlessEqual(res, EXAMPLE_RECORD_JSONSTR)
 
     def test_get_feature_error(self):
