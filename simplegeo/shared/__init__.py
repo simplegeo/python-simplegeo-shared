@@ -133,11 +133,6 @@ class Client(object):
         self.uri = "http://%s:%s" % (host, port)
         self.http = Http()
 
-    def get_endpoint_descriptions(self):
-        """Describe known endpoints."""
-        endpoint = self._endpoint('endpoints')
-        return json_decode(self._request(endpoint, "GET")[1])
-
     def _endpoint(self, name, **kwargs):
         """Not used directly. Finds and formats the endpoints as needed for any type of request."""
         try:
