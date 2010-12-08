@@ -6,8 +6,7 @@ DEB_PYTHON_SYSTEM=pysupport
 include /usr/share/cdbs/1/rules/debhelper.mk
 include /usr/share/cdbs/1/class/python-distutils.mk
 
-build/gnop::
+build/python-simplegeo-shared::
 	pyflakes simplegeo/shared
-	python-coverage run setup.py test -s simplegeo.shared
-	python-coverage xml -o $(ARTIFACTS)/coverage.xml
+	python-coverage run --branch --include=simplegeo/* setup.py test -s simplegeo.context.test
 	python-coverage html -d $(ARTIFACTS)/htmlcov
