@@ -1,6 +1,6 @@
 import unittest
 from pyutil import jsonutil as json
-from simplegeo.shared import Client, APIError, DecodeError
+from simplegeo.shared import Client, APIError, DecodeError, Feature
 
 from decimal import Decimal as D
 
@@ -21,22 +21,36 @@ class ClientTest(unittest.TestCase):
         self.query_lon = D('-122.4783')
 
     def test_wrong_endpoint(self):
-        self.assertRaises(Exception, self.client.endpoint, 'wrongwrong')
+        self.assertRaises(Exception, self.client._endpoint, 'wrongwrong')
 
     def test_missing_argument(self):
-        self.assertRaises(Exception, self.client.endpoint, 'feature')
+        self.assertRaises(Exception, self.client._endpoint, 'feature')
 
-    def test_get_feature(self):
+    def test_get_point_feature(self):
+        mockhttp = mock.Mock()
+        mockhttp.request.return_value = ({'status': '200', 'content-type': 'application/json', }, EXAMPLE_POINT_BODY)
+        self.client.http = mockhttp
+
+        res = self.client.get_feature("SG_4bgzicKFmP89tQFGLGZYy0_34.714646_-86.584970")
+        self.assertEqual(mockhttp.method_calls[0][0], 'request')
+        self.assertEqual(mockhttp.method_calls[0][1][0], 'http://api.simplegeo.com:80/%s/features/%s.json' % (API_VERSION, "SG_4bgzicKFmP89tQFGLGZYy0_34.714646_-86.584970"))
+        self.assertEqual(mockhttp.method_calls[0][1][1], 'GET')
+        # the code under test is required to have json-decoded this before handing it back
+        self.failUnless(isinstance(res, Feature), (repr(res), type(res)))
+
+    def test_get_polygon_feature(self):
         mockhttp = mock.Mock()
         mockhttp.request.return_value = ({'status': '200', 'content-type': 'application/json', }, EXAMPLE_BODY)
         self.client.http = mockhttp
 
-        res = self.client.get_feature("abcdefghijklmnopqrstuvwyz")
+        res = self.client.get_feature("SG_4bgzicKFmP89tQFGLGZYy0_34.714646_-86.584970")
         self.assertEqual(mockhttp.method_calls[0][0], 'request')
-        self.assertEqual(mockhttp.method_calls[0][1][0], 'http://api.simplegeo.com:80/%s/feature/%s.json' % (API_VERSION, "abcdefghijklmnopqrstuvwyz"))
+        self.assertEqual(mockhttp.method_calls[0][1][0], 'http://api.simplegeo.com:80/%s/features/%s.json' % (API_VERSION, "SG_4bgzicKFmP89tQFGLGZYy0_34.714646_-86.584970"))
+
         self.assertEqual(mockhttp.method_calls[0][1][1], 'GET')
         # the code under test is required to have json-decoded this before handing it back
-        self.failUnless(isinstance(res, dict), (repr(res), type(res)))
+        self.failUnless(isinstance(res, Feature), (repr(res), type(res)))
+
 
     def test_type_check_request(self):
         self.failUnlessRaises(TypeError, self.client._request, 'whatever', 'POST', {'bogus': "non string"})
@@ -47,7 +61,7 @@ class ClientTest(unittest.TestCase):
         self.client.http = mockhttp
 
         try:
-            self.client.get_feature("abcdefghijklmnopqrstuvwyz")
+            self.client.get_feature("SG_4bgzicKFmP89tQFGLGZYy0_34.714646_-86.584970")
         except DecodeError, e:
             self.failUnlessEqual(e.code,None,repr(e.code))
             self.failUnless("Could not decode JSON" in e.msg, repr(e.msg))
@@ -55,7 +69,7 @@ class ClientTest(unittest.TestCase):
             self.failUnless('JSONDecodeError' in erepr, erepr)
 
         self.assertEqual(mockhttp.method_calls[0][0], 'request')
-        self.assertEqual(mockhttp.method_calls[0][1][0], 'http://api.simplegeo.com:80/%s/feature/%s.json' % (API_VERSION, "abcdefghijklmnopqrstuvwyz"))
+        self.assertEqual(mockhttp.method_calls[0][1][0], 'http://api.simplegeo.com:80/%s/features/%s.json' % (API_VERSION, "SG_4bgzicKFmP89tQFGLGZYy0_34.714646_-86.584970"))
         self.assertEqual(mockhttp.method_calls[0][1][1], 'GET')
 
     def test_dont_json_decode_results(self):
@@ -87,13 +101,13 @@ class ClientTest(unittest.TestCase):
         self.client.http = mockhttp
 
         try:
-            self.client.get_feature("abcdefghijklmnopqrstuvwyz")
+            self.client.get_feature("SG_4bgzicKFmP89tQFGLGZYy0_34.714646_-86.584970")
         except APIError, e:
             self.failUnlessEqual(e.code, 500, repr(e.code))
             self.failUnlessEqual(e.msg, '{"message": "help my web server is confuzzled"}', (type(e.msg), repr(e.msg)))
 
         self.assertEqual(mockhttp.method_calls[0][0], 'request')
-        self.assertEqual(mockhttp.method_calls[0][1][0], 'http://api.simplegeo.com:80/%s/feature/%s.json' % (API_VERSION, "abcdefghijklmnopqrstuvwyz"))
+        self.assertEqual(mockhttp.method_calls[0][1][0], 'http://api.simplegeo.com:80/%s/features/%s.json' % (API_VERSION, "SG_4bgzicKFmP89tQFGLGZYy0_34.714646_-86.584970"))
         self.assertEqual(mockhttp.method_calls[0][1][1], 'GET')
 
     def test_APIError(self):
@@ -103,116 +117,10 @@ class ClientTest(unittest.TestCase):
         repr(e)
         str(e)
 
+EXAMPLE_POINT_BODY="""
+{"geometry":{"type":"Point","coordinates":[-105.048054,40.005274]},"type":"Feature","id":"SG_6sRJczWZHdzNj4qSeRzpzz_40.005274_-105.048054@1291669259","properties":{"province":"CO","city":"Erie","name":"CMD Colorado Inc","tags":["sandwich"],"country":"US","phone":"+1 303 664 9448","address":"305 Baron Ct","owner":"simplegeo","classifiers":[{"category":"Restaurants","type":"Food & Drink","subcategory":""}],"postcode":"80516"}}
+"""
 
 EXAMPLE_BODY="""
-{
-   "weather": {
-    "message" : "'NoneType' object has no attribute 'properties'",
-    "code" : 400
-    },
-   "features": [
-    {
-     "name" : "06075013000",
-     "type" : "Census Tract",
-     "bounds": [
-      -122.437326,
-      37.795016,
-      -122.42360099999999,
-      37.799485
-     ],
-     "href" : "http://api.simplegeo.com/0.1/boundary/Census_Tract%3A06075013000%3A9q8zn0.json"
-     },
-     {
-     "name" : "94123",
-     "type" : "Postal",
-     "bounds": [
-      -122.452966,
-      37.792787,
-      -122.42360099999999,
-      37.810798999999996
-     ],
-     "href" : "http://api.simplegeo.com/0.1/boundary/Postal%3A94123%3A9q8zjc.json"
-     },
-     {
-     "name" : "San Francisco",
-     "type" : "County",
-     "bounds": [
-      -123.173825,
-      37.639829999999996,
-      -122.28178,
-      37.929823999999996
-     ],
-     "href" : "http://api.simplegeo.com/0.1/boundary/County%3ASan_Francisco%3A9q8yvv.json"
-     },
-     {
-     "name" : "San Francisco",
-     "type" : "City",
-     "bounds": [
-      -123.173825,
-      37.639829999999996,
-      -122.28178,
-      37.929823999999996
-     ],
-     "href" : "http://api.simplegeo.com/0.1/boundary/City%3ASan_Francisco%3A9q8yvv.json"
-     },
-     {
-     "name" : "Congressional District 8",
-     "type" : "Congressional District",
-     "bounds": [
-      -122.612285,
-      37.708131,
-      -122.28178,
-      37.929823999999996
-     ],
-     "href" : "http://api.simplegeo.com/0.1/boundary/Congressional_District%3ACongressional_Di%3A9q8yyn.json"
-     },
-     {
-     "name" : "United States of America",
-     "type" : "Country",
-     "bounds": [
-      -179.14247147726383,
-      18.930137634111077,
-      179.78114994357418,
-      71.41217966730892
-     ],
-     "href" : "http://api.simplegeo.com/0.1/boundary/Country%3AUnited_States_of%3A9z12zg.json"
-     },
-     {
-     "name" : "Pacific Heights",
-     "type" : "Neighborhood",
-     "bounds": [
-      -122.446782,
-      37.787529,
-      -122.422182,
-      37.797728
-     ],
-     "href" : "http://api.simplegeo.com/0.1/boundary/Neighborhood%3APacific_Heights%3A9q8yvz.json"
-     },
-     {
-     "name" : "San Francisco1",
-     "type" : "Urban Area",
-     "bounds": [
-      -122.51666666668193,
-      37.19166666662851,
-      -121.73333333334497,
-      38.04166666664091
-     ],
-     "href" : "http://api.simplegeo.com/0.1/boundary/Urban_Area%3ASan_Francisco1%3A9q9jsg.json"
-     },
-     {
-     "name" : "California",
-     "type" : "Province",
-     "bounds": [
-      -124.48200299999999,
-      32.528832,
-      -114.131211,
-      42.009516999999995
-     ],
-     "href" : "http://api.simplegeo.com/0.1/boundary/Province%3ACA%3A9qdguu.json"
-     }
-   ],
-   "demographics": {
-    "metro_score" : "10"
-    }
-   }
+{"geometry":{"type":"Polygon","coordinates":[[[-86.3672637,33.4041157],[-86.3676356,33.4039745],[-86.3681259,33.40365],[-86.3685992,33.4034242],[-86.3690556,33.4031137],[-86.3695121,33.4027609],[-86.3700361,33.4024363],[-86.3705601,33.4021258],[-86.3710166,33.4018012],[-86.3715575,33.4014061],[-86.3720647,33.4008557],[-86.3724366,33.4005311],[-86.3730621,33.3998395],[-86.3733156,33.3992891],[-86.3735523,33.3987811],[-86.3737383,33.3983153],[-86.3739073,33.3978355],[-86.374144,33.3971016],[-86.3741609,33.3968758],[-86.3733494,33.3976943],[-86.3729606,33.3980189],[-86.3725211,33.3984141],[-86.3718111,33.3990069],[-86.3713378,33.399402],[-86.370949,33.3997266],[-86.3705094,33.3999948],[-86.3701206,33.4003899],[-86.3697487,33.4007287],[-86.369157,33.4012791],[-86.3687682,33.401646],[-86.3684132,33.4019847],[-86.368092,33.4023798],[-86.3676694,33.4028738],[-86.3674835,33.4033113],[-86.3672975,33.4037487],[-86.3672637,33.4041157],[-86.3672637,33.4041157]]]},"type":"Feature","properties":{"category":"Island","license":"http://creativecommons.org/licenses/by-sa/2.0/","handle":"SG_4b10i9vCyPnKAYiYBLKZN7_33.400800_-86.370802","subcategory":"","name":"Elliott Island","attribution":"(c) OpenStreetMap (http://openstreetmap.org/) and contributors CC-BY-SA (http://creativecommons.org/licenses/by-sa/2.0/)","type":"Physical Feature","abbr":""},"id":"SG_4b10i9vCyPnKAYiYBLKZN7"}
 """
