@@ -2,7 +2,7 @@ from _version import __version__
 
 API_VERSION = '1.0'
 
-import copy, re, time
+import copy, re
 from decimal import Decimal as D
 
 from httplib2 import Http
@@ -21,6 +21,28 @@ def json_decode(jsonstr):
     except (ValueError, TypeError), le:
         raise DecodeError(jsonstr, le)
 
+def swap(tupleab):
+    return (tupleab[1], tupleab[0])
+
+def deep_swap(struc):
+    if is_numeric(struc[0]):
+        assert len(struc) == 2
+        assert is_numeric(struc[1])
+        return swap(struc)
+    return [deep_swap(sub) for sub in struc]
+
+def deep_validate_lat_lon(struc):
+    precondition(isinstance(struc, (list, tuple, set)), 'argument must be a sequence (of sequences of...) numbers')
+    if is_numeric(struc[0]):
+        assert len(struc) == 2
+        assert is_numeric(struc[1])
+        assert is_valid_lat(struc[0])
+        assert is_valid_lon(struc[1])
+    else:
+        for sub in struc:
+            deep_validate_lat_lon(sub)
+    return True
+
 SIMPLEGEOHANDLE_RSTR=r"""SG_[A-Za-z0-9]{22}(?:_-?[0-9]{1,3}(?:\.[0-9]+)?_-?[0-9]{1,3}(?:\.[0-9]+)?)?(?:@[0-9]+)?$"""
 SIMPLEGEOHANDLE_R= re.compile(SIMPLEGEOHANDLE_RSTR)
 def is_simplegeohandle(s):
@@ -38,7 +60,7 @@ def is_valid_lon(x):
     return is_numeric(x) and (x <= 180) and (x >= -180.0)
 
 class Feature:
-    def __init__(self, coordinates, geomtype='Point', simplegeohandle=None, created=None, properties=None):
+    def __init__(self, coordinates, geomtype='Point', simplegeohandle=None, properties=None):
         """
         The simplegeohandle and the record_id are both optional -- you
         can have one or the other or both or neither.
@@ -64,56 +86,55 @@ class Feature:
         A record_id is passed in as a value in the properties dict
         named "record_id".
 
-        Following GeoJSON, coordinates are either a single pair of [lon,lat] 
-        or sequence of sequences of lon/lat pairs that define the outline of 
-        a Polygon
+        geomtype is a GeoJSON geometry type such as "Point",
+        "Polygon", or "Multipolygon". coordinates is a GeoJSON
+        coordinates *except* that each lat/lon pair is written in
+        order lat, lon instead of the GeoJSON order of lon, at.
         """
         precondition(simplegeohandle is None or is_simplegeohandle(simplegeohandle), "simplegeohandle is required to be None or to match the regex %s" % SIMPLEGEOHANDLE_RSTR, simplegeohandle=simplegeohandle)
         record_id = properties and properties.get('record_id') or None
         precondition(record_id is None or isinstance(record_id, basestring), "record_id is required to be None or a string.", record_id=record_id, properties=properties)
-        precondition(geomtype in ['Point', 'Polygon'], geomtype)
-        if geomtype == 'Point':
-            precondition(len(coordinates) == 2, coordinates)
-            precondition(is_valid_lon(coordinates[0]) and is_valid_lat(coordinates[1]), coordinates, is_valid_lon(coordinates[0]), is_valid_lat(coordinates[1]))
-        elif geomtype == 'Polygon':
-            precondition(all((len(x) == 2 for x in z) for z in coordinates), coordinates)
-            precondition((all(is_valid_lon(o) and is_valid_lat(a) for o, a in z) for z in coordinates), coordinates)
+        precondition(deep_validate_lat_lon(coordinates), coordinates)
 
         self.id = simplegeohandle
         self.coordinates = coordinates
         self.geomtype = geomtype
-        if created is None:
-            self.created = int(time.time())
-        else:
-            self.created = created
         self.properties = {}
         if properties:
             self.properties.update(properties)
 
     @classmethod
     def from_dict(cls, data):
+        """
+        data is a GeoJSON standard data structure, including that the
+        coordinates are in GeoJSON order (lon, lat) instead of
+        SimpleGeo order (lat, lon)
+        """
         assert isinstance(data, dict), (type(data), repr(data))
         feature = cls(
-            simplegeohandle=data.get('id'),
-            coordinates = data['geometry']['coordinates'],
-            geomtype = data['geometry']['type'], 
-            properties=data.get('properties')
+            simplegeohandle = data.get('id'),
+            coordinates = deep_swap(data['geometry']['coordinates']),
+            geomtype = data['geometry']['type'],
+            properties = data.get('properties')
             )
 
         return feature
 
     def to_dict(self):
-        res = {
+        """
+        Returns a GeoJSON object, including having its coordinates in
+        GeoJSON standad order (lon, lat) instead of SimpleGeo standard
+        order (lat, lon).
+        """
+        return {
             'type': 'Feature',
             'id': self.id,
-            'created': self.created,
             'geometry': {
                 'type': self.geomtype,
-                'coordinates': self.coordinates
+                'coordinates': deep_swap(self.coordinates)
             },
             'properties': copy.deepcopy(self.properties),
         }
-        return res
 
     @classmethod
     def from_json(cls, jsonstr):

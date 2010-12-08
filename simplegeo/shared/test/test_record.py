@@ -1,17 +1,37 @@
 import unittest
-from simplegeo.shared import Feature
+from simplegeo.shared import Feature, deep_swap
 from decimal import Decimal as D
 
 class FeatureTest(unittest.TestCase):
+
+    def test_swapper(self):
+        t1 = (2, 1)
+        self.failUnlessEqual(deep_swap(t1), (1, 2))
+
+        linestring1 = [(2, 1), (4, 3), (6, 5), (8, 7)]
+        self.failUnlessEqual(
+            deep_swap(linestring1),
+            [(1, 2), (3, 4), (5, 6), (7, 8)]
+            )
+
+        multipolygon1 = [
+            [[[102.0, 2.0], [103.0, 2.0], [103.0, 3.0], [102.0, 3.0], [102.0, 2.0]]],
+            [[[100.0, 0.0], [101.0, 0.0], [101.0, 1.0], [100.0, 1.0], [100.0, 0.0]],
+             [[100.2, 0.2], [100.8, 0.2], [100.8, 0.8], [100.2, 0.8], [100.2, 0.2]]]
+            ]
+
+        self.failUnlessEqual(deep_swap(multipolygon1),
+                             [[[(2.0, 102.0), (2.0, 103.0), (3.0, 103.0), (3.0, 102.0), (2.0, 102.0)]], [[(0.0, 100.0), (0.0, 101.0), (1.0, 101.0), (1.0, 100.0), (0.0, 100.0)], [(0.2, 100.2), (0.2, 100.8), (0.8, 100.8), (0.8, 100.2), (0.2, 100.2)]]]
+                             )
 
     def test_record_constructor(self):
         self.failUnlessRaises(AssertionError, Feature, D('11.0'), D('10.0'), properties={'record_id': 'my_id'})
 
         # lat exceeds bound
-        self.failUnlessRaises(AssertionError, Feature, (D('11.0'), D('90.1')), properties={'record_id': 'my_id'})
+        self.failUnlessRaises(AssertionError, Feature, (D('91.0'), D('10.1')), properties={'record_id': 'my_id'})
 
         # lon exceeds bound
-        self.failUnlessRaises(AssertionError, Feature, (D('180.1'), D('10.0')), properties={'record_id': 'my_id'})
+        self.failUnlessRaises(AssertionError, Feature, (D('10.1'), D('180.1')), properties={'record_id': 'my_id'})
 
         record = Feature(coordinates=(D('11.0'), D('10.0')), properties={'record_id': 'my_id'})
         self.failUnlessEqual(record.properties.get('record_id'), 'my_id')
@@ -41,6 +61,14 @@ class FeatureTest(unittest.TestCase):
         self.failUnlessEqual(record.coordinates[1], 10.0)
         self.failUnlessEqual(record.properties.get('record_id'), 'my_id')
 
+        record = Feature([[(11.0, 179.9), (12, -179.9)]], geomtype='Polygon')
+        self.failUnlessEqual(record.geomtype, 'Polygon')
+        self.failUnlessEqual(len(record.coordinates[0]), 2)
+        self.failUnlessEqual(record.coordinates[0][0], (11.0, 179.9))
+
+        jsondict = record.to_dict()
+        self.failUnlessEqual(jsondict['geometry']['coordinates'][0][0], (179.9, 11.))
+
     def test_record_from_dict(self):
         record_dict = {
                      'geometry' : {
@@ -56,8 +84,8 @@ class FeatureTest(unittest.TestCase):
                      }
 
         record = Feature.from_dict(record_dict)
-        self.assertEquals(record.coordinates[0], D('10.0'))
-        self.assertEquals(record.coordinates[1], D('11.0'))
+        self.assertEquals(record.coordinates[0], D('11.0'))
+        self.assertEquals(record.coordinates[1], D('10.0'))
         self.assertEquals(record.properties.get('record_id'), 'my_id')
         self.assertEquals(record.properties['key'], 'value')
         self.assertEquals(record.properties['type'], 'object')
@@ -111,8 +139,8 @@ class FeatureTest(unittest.TestCase):
                      }
 
         record = Feature.from_dict(record_dict)
-        self.assertEquals(record.coordinates[0], 10.0)
-        self.assertEquals(record.coordinates[1], 11.0)
+        self.assertEquals(record.coordinates[0], 11.0)
+        self.assertEquals(record.coordinates[1], 10.0)
 
     def test_record_to_dict_sets_id_correctly(self):
         handle = 'SG_abcdefghijklmnopqrstuv'
