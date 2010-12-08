@@ -7,6 +7,12 @@ class FeatureTest(unittest.TestCase):
     def test_record_constructor(self):
         self.failUnlessRaises(AssertionError, Feature, D('11.0'), D('10.0'), properties={'record_id': 'my_id'})
 
+        # lat exceeds bound
+        self.failUnlessRaises(AssertionError, Feature, (D('11.0'), D('90.1')), properties={'record_id': 'my_id'})
+
+        # lon exceeds bound
+        self.failUnlessRaises(AssertionError, Feature, (D('180.1'), D('10.0')), properties={'record_id': 'my_id'})
+
         record = Feature(coordinates=(D('11.0'), D('10.0')), properties={'record_id': 'my_id'})
         self.failUnlessEqual(record.properties.get('record_id'), 'my_id')
         self.failUnlessEqual(record.id, None)

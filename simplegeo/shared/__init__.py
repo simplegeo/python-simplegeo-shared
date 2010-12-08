@@ -31,6 +31,12 @@ FEATURES_URL_R=re.compile("http://(.*)/features/([A-Za-z_,-]*).json$")
 def is_numeric(x):
     return isinstance(x, (int, long, float, D))
 
+def is_valid_lat(x):
+    return is_numeric(x) and (x <= 90) and (x >= -90)
+
+def is_valid_lon(x):
+    return is_numeric(x) and (x <= 180) and (x >= -180.0)
+
 class Feature:
     def __init__(self, coordinates, geomtype='Point', simplegeohandle=None, created=None, properties=None):
         """
@@ -68,10 +74,10 @@ class Feature:
         precondition(geomtype in ['Point', 'Polygon'], geomtype)
         if geomtype == 'Point':
             precondition(len(coordinates) == 2, coordinates)
-            precondition(all(is_numeric(x) for x in coordinates), coordinates)
+            precondition(is_valid_lon(coordinates[0]) and is_valid_lat(coordinates[1]), coordinates, is_valid_lon(coordinates[0]), is_valid_lat(coordinates[1]))
         elif geomtype == 'Polygon':
             precondition(all((len(x) == 2 for x in z) for z in coordinates), coordinates)
-            precondition((all(all(is_numeric(x) for x in y) for y in z) for z in coordinates), coordinates)
+            precondition((all(is_valid_lon(o) and is_valid_lat(a) for o, a in z) for z in coordinates), coordinates)
 
         self.id = simplegeohandle
         self.coordinates = coordinates
