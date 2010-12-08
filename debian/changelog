@@ -1,3 +1,19 @@
+python-simplegeo-shared (2.0.21) lucid; urgency=low
+
+  [ Zooko Ofsimplegeo ]
+  * README.txt -- link to sister libraries
+  * build with pyflakes and better coverage
+  * input validation on lats and lons being within bounds
+  * handle arbitary nested GeoJSON objects (including the feared
+    MultiPolygon) and bring all Python objects into SimpleGeo schematic
+    of lat,lon and convert to/from GeoJSON lon,lat as needed
+  * build dep pyflakes
+  * fix mistake in debian/rules
+
+  [ SimpleGeo Nerds ]
+
+ -- SimpleGeo Nerds <nerds@simplegeo.com>  Wed, 08 Dec 2010 07:27:30 +0000
+
 python-simplegeo-shared (1.13.16) lucid; urgency=low
 
   [ Zooko Ofsimplegeo ]
