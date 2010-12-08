@@ -1,3 +1,13 @@
+python-simplegeo-shared (1.13.14) lucid; urgency=low
+
+  [ ansate ]
+  * incremented version since we made major changes that child libs will
+    need to use
+
+  [ SimpleGeo Nerds ]
+
+ -- SimpleGeo Nerds <nerds@simplegeo.com>  Wed, 08 Dec 2010 03:28:19 +0000
+
 python-simplegeo-shared (1.12.12) lucid; urgency=low
 
   [ ansate ]
