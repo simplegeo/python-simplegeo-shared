@@ -3,6 +3,7 @@ from _version import __version__
 API_VERSION = '1.0'
 
 import copy, re, time
+from decimal import Decimal as D
 
 from httplib2 import Http
 import oauth2 as oauth
@@ -27,47 +28,54 @@ def is_simplegeohandle(s):
 
 FEATURES_URL_R=re.compile("http://(.*)/features/([A-Za-z_,-]*).json$")
 
-def get_simplegeohandle_from_url(u):
-    mo = FEATURES_URL_R.match(u)
-    if not mo:
-        raise Exception("This is not a SimpleGeo Places URL: %s" % (u,))
-    handle = mo.group(2)
-    assert is_simplegeohandle(handle)
-    return mo.group(2)
+def is_numeric(x):
+    return isinstance(x, (int, long, float, D))
 
-class Record:
-    def __init__(self, lat, lon, simplegeohandle=None, created=None, properties=None):
+class Feature:
+    def __init__(self, coordinates, geomtype='Point', simplegeohandle=None, created=None, properties=None):
         """
         The simplegeohandle and the record_id are both optional -- you
-        have have one or the other or both or neither.
+        can have one or the other or both or neither.
 
         A simplegeohandle is globally unique and is assigned by the
         Places service. It is returned from the Places service in the
         response to a request to add a place to the Places database
-        (the add_record method).
+        (the add_feature method).
 
         The simplegeohandle is passed in as an argument to the
         constructor, named "simplegeohandle", and is stored in the
-        "id" attribute of the Record instance.
+        "id" attribute of the Feature instance.
 
         A record_id is scoped to your particular user account and is
         chosen by you. The only use for the record_id is in case you
-        call add_record and you have already previously added that
-        record to the database -- if there is already a record from
+        call add_feature and you have already previously added that
+        feature to the database -- if there is already a feature from
         your user account with the same record_id then the Places
-        service will return that record to you, along with that
-        records simplegeohandle, instead of making a second, duplicate
-        record.
+        service will return that feature to you, along with that
+        feature's simplegeohandle, instead of making a second, duplicate
+        feature.
 
         A record_id is passed in as a value in the properties dict
         named "record_id".
+
+        Following GeoJSON, coordinates are either a single pair of [lon,lat] 
+        or sequence of sequences of lon/lat pairs that define the outline of 
+        a Polygon
         """
         precondition(simplegeohandle is None or is_simplegeohandle(simplegeohandle), "simplegeohandle is required to be None or to match the regex %s" % SIMPLEGEOHANDLE_RSTR, simplegeohandle=simplegeohandle)
         record_id = properties and properties.get('record_id') or None
         precondition(record_id is None or isinstance(record_id, basestring), "record_id is required to be None or a string.", record_id=record_id, properties=properties)
+        precondition(geomtype in ['Point', 'Polygon'], geomtype)
+        if geomtype == 'Point':
+            precondition(len(coordinates) == 2, coordinates)
+            precondition(all(is_numeric(x) for x in coordinates), coordinates)
+        elif geomtype == 'Polygon':
+            precondition(all((len(x) == 2 for x in z) for z in coordinates), coordinates)
+            precondition((all(all(is_numeric(x) for x in y) for y in z) for z in coordinates), coordinates)
+
         self.id = simplegeohandle
-        self.lon = lon
-        self.lat = lat
+        self.coordinates = coordinates
+        self.geomtype = geomtype
         if created is None:
             self.created = int(time.time())
         else:
@@ -79,15 +87,14 @@ class Record:
     @classmethod
     def from_dict(cls, data):
         assert isinstance(data, dict), (type(data), repr(data))
-        coord = data['geometry']['coordinates']
-        record = cls(
+        feature = cls(
             simplegeohandle=data.get('id'),
-            lat=coord[1],
-            lon=coord[0],
+            coordinates = data['geometry']['coordinates'],
+            geomtype = data['geometry']['type'], 
             properties=data.get('properties')
             )
-        record.created = data.get('created', record.created)
-        return record
+
+        return feature
 
     def to_dict(self):
         res = {
@@ -95,8 +102,8 @@ class Record:
             'id': self.id,
             'created': self.created,
             'geometry': {
-                'type': 'Point',
-                'coordinates': [self.lon, self.lat],
+                'type': self.geomtype,
+                'coordinates': self.coordinates
             },
             'properties': copy.deepcopy(self.properties),
         }
@@ -112,7 +119,7 @@ class Record:
 class Client(object):
     realm = "http://api.simplegeo.com"
     endpoints = {
-        'feature': 'feature/%(simplegeohandle)s.json',
+        'feature': 'features/%(simplegeohandle)s.json',
     }
 
     def __init__(self, key, secret, api_version=API_VERSION, host="api.simplegeo.com", port=80):
@@ -128,10 +135,10 @@ class Client(object):
 
     def get_endpoint_descriptions(self):
         """Describe known endpoints."""
-        endpoint = self.endpoint('endpoints')
+        endpoint = self._endpoint('endpoints')
         return json_decode(self._request(endpoint, "GET")[1])
 
-    def endpoint(self, name, **kwargs):
+    def _endpoint(self, name, **kwargs):
         """Not used directly. Finds and formats the endpoints as needed for any type of request."""
         try:
             endpoint = self.endpoints[name]
@@ -144,8 +151,10 @@ class Client(object):
         return urljoin(urljoin(self.uri, self.api_version + '/'), endpoint)
 
     def get_feature(self, simplegeohandle):
-        endpoint = self.endpoint('feature', simplegeohandle=simplegeohandle)
-        return json_decode(self._request(endpoint, "GET")[1])
+        """Return the GeoJSON representation of a feature."""
+        precondition(is_simplegeohandle(simplegeohandle), "simplegeohandle is required to match the regex %s" % SIMPLEGEOHANDLE_RSTR, simplegeohandle=simplegeohandle)
+        endpoint = self._endpoint('feature', simplegeohandle=simplegeohandle)
+        return Feature.from_json(self._request(endpoint, 'GET')[1])
 
     def _request(self, endpoint, method, data=None):
         """
