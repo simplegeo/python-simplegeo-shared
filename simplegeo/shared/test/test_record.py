@@ -1,6 +1,5 @@
 import unittest
 from simplegeo.shared import Feature
-import mock
 from decimal import Decimal as D
 
 class FeatureTest(unittest.TestCase):

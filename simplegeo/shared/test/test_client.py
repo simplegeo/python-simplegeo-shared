@@ -28,7 +28,7 @@ class ClientTest(unittest.TestCase):
 
     def test_get_point_feature(self):
         mockhttp = mock.Mock()
-        mockhttp.request.return_value = ({'status': '200', 'content-type': 'application/json', }, EXAMPLE_POINT_BODY)
+        mockhttp.request.return_value = ({'status': '200', 'content-type': 'application/json', 'thingie': "just to see if you're listening"}, EXAMPLE_POINT_BODY)
         self.client.http = mockhttp
 
         res = self.client.get_feature("SG_4bgzicKFmP89tQFGLGZYy0_34.714646_-86.584970")
@@ -37,6 +37,8 @@ class ClientTest(unittest.TestCase):
         self.assertEqual(mockhttp.method_calls[0][1][1], 'GET')
         # the code under test is required to have json-decoded this before handing it back
         self.failUnless(isinstance(res, Feature), (repr(res), type(res)))
+
+        self.failUnless(self.client.get_most_recent_http_headers(), {'status': '200', 'content-type': 'application/json', 'thingie': "just to see if you're listening"})
 
     def test_get_polygon_feature(self):
         mockhttp = mock.Mock()

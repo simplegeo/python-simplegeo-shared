@@ -133,6 +133,11 @@ class Client(object):
         self.uri = "http://%s:%s" % (host, port)
         self.http = Http()
 
+    def get_most_recent_http_headers(self):
+        """ Intended for debugging -- return the most recent HTTP
+        headers which were received from the server. """
+        return self.headers
+
     def _endpoint(self, name, **kwargs):
         """Not used directly. Finds and formats the endpoints as needed for any type of request."""
         try:
@@ -169,12 +174,12 @@ class Client(object):
         headers = request.to_header(self.realm)
         headers['User-Agent'] = 'SimpleGeo Places Client v%s' % __version__
 
-        resp, content = self.http.request(endpoint, method, body=body, headers=headers)
+        self.headers, content = self.http.request(endpoint, method, body=body, headers=headers)
 
-        if resp['status'][0] not in ('2', '3'):
-            raise APIError(int(resp['status']), content, resp)
+        if self.headers['status'][0] not in ('2', '3'):
+            raise APIError(int(self.headers['status']), content, self.headers)
 
-        return resp, content
+        return self.headers, content
 
 
 class APIError(Exception):
