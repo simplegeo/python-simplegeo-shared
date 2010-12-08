@@ -8,5 +8,5 @@ include /usr/share/cdbs/1/class/python-distutils.mk
 
 build/python-simplegeo-shared::
 	pyflakes simplegeo/shared
-	python-coverage run --branch --include=simplegeo/* setup.py test -s simplegeo.context.test
+	python-coverage run --branch --include=simplegeo/* setup.py test -s simplegeo.shared.test
 	python-coverage html -d $(ARTIFACTS)/htmlcov
