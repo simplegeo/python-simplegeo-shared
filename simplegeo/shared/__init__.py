@@ -90,16 +90,19 @@ class Feature:
         "Polygon", or "Multipolygon". coordinates is a GeoJSON
         coordinates *except* that each lat/lon pair is written in
         order lat, lon instead of the GeoJSON order of lon, at.
+
+        If you wish your Feature to be kept out of the open, public
+        Places database then set the "private" key in the properties
+        dict to be True. (Its default value is False.)
         """
         precondition(simplegeohandle is None or is_simplegeohandle(simplegeohandle), "simplegeohandle is required to be None or to match the regex %s" % SIMPLEGEOHANDLE_RSTR, simplegeohandle=simplegeohandle)
         record_id = properties and properties.get('record_id') or None
         precondition(record_id is None or isinstance(record_id, basestring), "record_id is required to be None or a string.", record_id=record_id, properties=properties)
         precondition(deep_validate_lat_lon(coordinates), coordinates)
-
         self.id = simplegeohandle
         self.coordinates = coordinates
         self.geomtype = geomtype
-        self.properties = {}
+        self.properties = {'private': False}
         if properties:
             self.properties.update(properties)
 
