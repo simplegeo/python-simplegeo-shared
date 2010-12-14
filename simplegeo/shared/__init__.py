@@ -26,18 +26,18 @@ def swap(tupleab):
 
 def deep_swap(struc):
     if is_numeric(struc[0]):
-        assert len(struc) == 2
-        assert is_numeric(struc[1])
+        assert len(struc) == 2, (type(struc), repr(struc))
+        assert is_numeric(struc[1]), (type(struc), repr(struc))
         return swap(struc)
     return [deep_swap(sub) for sub in struc]
 
 def deep_validate_lat_lon(struc):
     precondition(isinstance(struc, (list, tuple, set)), 'argument must be a sequence (of sequences of...) numbers')
     if is_numeric(struc[0]):
-        assert len(struc) == 2
-        assert is_numeric(struc[1])
-        assert is_valid_lat(struc[0])
-        assert is_valid_lon(struc[1])
+        assert len(struc) == 2, (type(struc), repr(struc))
+        assert is_numeric(struc[1]), (type(struc), repr(struc))
+        assert is_valid_lat(struc[0]), (type(struc), repr(struc))
+        assert is_valid_lon(struc[1]), (type(struc), repr(struc))
     else:
         for sub in struc:
             deep_validate_lat_lon(sub)
