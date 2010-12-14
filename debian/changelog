@@ -1,3 +1,14 @@
+python-simplegeo-shared (2.0.28) lucid; urgency=low
+
+  [ Zooko Ofsimplegeo ]
+  * a couple of tiny cleanups in the setup
+  * more detailed error message if coordinates fail to validate as being
+    a set of lat, lon pairs
+
+  [ SimpleGeo Nerds ]
+
+ -- SimpleGeo Nerds <nerds@simplegeo.com>  Tue, 14 Dec 2010 23:05:02 +0000
+
 python-simplegeo-shared (2.0.27) lucid; urgency=low
 
   * UNRELEASED
