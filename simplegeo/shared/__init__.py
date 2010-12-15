@@ -159,6 +159,7 @@ class Client(object):
         self.signature = oauth.SignatureMethod_HMAC_SHA1()
         self.uri = "http://%s:%s" % (host, port)
         self.http = Http()
+        self.headers = None
 
     def get_most_recent_http_headers(self):
         """ Intended for debugging -- return the most recent HTTP
