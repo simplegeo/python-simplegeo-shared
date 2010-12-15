@@ -1,3 +1,14 @@
+python-simplegeo-shared (2.0.29) lucid; urgency=low
+
+  [ Zooko Ofsimplegeo ]
+  * make error message more clear if a Feature is constructed with the
+    wrong type of arguments -- having "coordinates" shaped wrong is the
+    more common mistake (thanks Andrew Mager)
+
+  [ SimpleGeo Nerds ]
+
+ -- SimpleGeo Nerds <nerds@simplegeo.com>  Wed, 15 Dec 2010 22:49:22 +0000
+
 python-simplegeo-shared (2.0.28) lucid; urgency=low
 
   [ Zooko Ofsimplegeo ]

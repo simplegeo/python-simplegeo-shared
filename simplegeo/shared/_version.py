@@ -1,6 +1,6 @@
 # This is the version of this source code.
 
-verstr = "2.0.28"
+verstr = "2.0.29"
 try:
     from pyutil.version_class import Version as pyutil_Version
     __version__ = pyutil_Version(verstr)
