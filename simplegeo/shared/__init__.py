@@ -11,7 +11,7 @@ import oauth2 as oauth
 from urlparse import urljoin
 
 from pyutil import jsonutil as json
-from pyutil.assertutil import precondition
+from pyutil.assertutil import precondition, _assert
 
 # example: http://api.simplegeo.com/1.0/feature/abcdefghijklmnopqrstuvwyz.json
 
@@ -26,18 +26,18 @@ def swap(tupleab):
 
 def deep_swap(struc):
     if is_numeric(struc[0]):
-        assert len(struc) == 2, (type(struc), repr(struc))
-        assert is_numeric(struc[1]), (type(struc), repr(struc))
+        _assert (len(struc) == 2, (type(struc), repr(struc)))
+        _assert (is_numeric(struc[1]), (type(struc), repr(struc)))
         return swap(struc)
     return [deep_swap(sub) for sub in struc]
 
 def deep_validate_lat_lon(struc):
     precondition(isinstance(struc, (list, tuple, set)), 'argument must be a sequence (of sequences of...) numbers')
     if is_numeric(struc[0]):
-        assert len(struc) == 2, (type(struc), repr(struc))
-        assert is_numeric(struc[1]), (type(struc), repr(struc))
-        assert is_valid_lat(struc[0]), (type(struc), repr(struc))
-        assert is_valid_lon(struc[1]), (type(struc), repr(struc))
+        _assert (len(struc) == 2, (type(struc), repr(struc)))
+        _assert (is_numeric(struc[1]), (type(struc), repr(struc)))
+        _assert (is_valid_lat(struc[0]), (type(struc), repr(struc)))
+        _assert (is_valid_lon(struc[1]), (type(struc), repr(struc)))
     else:
         for sub in struc:
             deep_validate_lat_lon(sub)
@@ -110,7 +110,7 @@ class Feature:
         coordinates are in GeoJSON order (lon, lat) instead of
         SimpleGeo order (lat, lon)
         """
-        assert isinstance(data, dict), (type(data), repr(data))
+        _assert (isinstance(data, dict), (type(data), repr(data)))
         feature = cls(
             simplegeohandle = data.get('id'),
             coordinates = deep_swap(data['geometry']['coordinates']),
