@@ -91,10 +91,10 @@ class Feature:
         coordinates *except* that each lat/lon pair is written in
         order lat, lon instead of the GeoJSON order of lon, at.
         """
-        precondition(simplegeohandle is None or is_simplegeohandle(simplegeohandle), "simplegeohandle is required to be None or to match the regex %s" % SIMPLEGEOHANDLE_RSTR, simplegeohandle=simplegeohandle)
+        precondition(deep_validate_lat_lon(coordinates), "The first argument, 'coordinates' is required to be a 2-element sequence of lon, lat for a point (or a more complicated set of coordinates for polygons or multipolygons).", coordinates)
+        precondition(simplegeohandle is None or is_simplegeohandle(simplegeohandle), "The third argument, 'simplegeohandle' is required to be None or to match this regex %s" % SIMPLEGEOHANDLE_RSTR, simplegeohandle=simplegeohandle)
         record_id = properties and properties.get('record_id') or None
         precondition(record_id is None or isinstance(record_id, basestring), "record_id is required to be None or a string.", record_id=record_id, properties=properties)
-        precondition(deep_validate_lat_lon(coordinates), coordinates)
 
         self.id = simplegeohandle
         self.coordinates = coordinates
