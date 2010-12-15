@@ -1,3 +1,15 @@
+python-simplegeo-shared (2.0.32) lucid; urgency=low
+
+  [ Zooko Ofsimplegeo ]
+  * pyutil's _assert() acts a lot like assert but still gets checked
+    when -O (and also gives more information about things when the
+    expression evaluates to False)
+  * this bound doesn't need to be a float when the rest are int
+
+  [ SimpleGeo Nerds ]
+
+ -- SimpleGeo Nerds <nerds@simplegeo.com>  Wed, 15 Dec 2010 23:33:23 +0000
+
 python-simplegeo-shared (2.0.29) lucid; urgency=low
 
   [ Zooko Ofsimplegeo ]
