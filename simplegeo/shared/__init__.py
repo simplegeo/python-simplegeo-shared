@@ -57,7 +57,7 @@ def is_valid_lat(x):
     return is_numeric(x) and (x <= 90) and (x >= -90)
 
 def is_valid_lon(x):
-    return is_numeric(x) and (x <= 180) and (x >= -180.0)
+    return is_numeric(x) and (x <= 180) and (x >= -180)
 
 class Feature:
     def __init__(self, coordinates, geomtype='Point', simplegeohandle=None, properties=None):
