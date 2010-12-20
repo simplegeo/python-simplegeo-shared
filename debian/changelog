@@ -1,3 +1,14 @@
+python-simplegeo-shared (2.0.34) lucid; urgency=low
+
+  [ Zooko Ofsimplegeo ]
+  * we require the "extra" functionality of pyutil which is jsonutil
+    (Other users of pyutil, which don't use jsonutil, don't need pyutil
+    to depend on simplejson.)
+
+  [ SimpleGeo Nerds ]
+
+ -- SimpleGeo Nerds <nerds@simplegeo.com>  Mon, 20 Dec 2010 17:30:45 +0000
+
 python-simplegeo-shared (2.0.33) lucid; urgency=low
 
   [ ansate ]
