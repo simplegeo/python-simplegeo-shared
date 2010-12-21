@@ -1,6 +1,6 @@
 import unittest
 from pyutil import jsonutil as json
-from simplegeo.shared import Client, APIError, DecodeError, Feature
+from simplegeo.shared import Client, APIError, DecodeError, Feature, is_valid_ip
 
 from decimal import Decimal as D
 
@@ -19,6 +19,10 @@ class ClientTest(unittest.TestCase):
         self.client = Client(MY_OAUTH_KEY, MY_OAUTH_SECRET, API_VERSION, API_HOST, API_PORT)
         self.query_lat = D('37.8016')
         self.query_lon = D('-122.4783')
+
+    def test_is_valid_ip(self):
+        self.failUnless(is_valid_ip('192.0.32.10'))
+        self.failIf(is_valid_ip('123123123123123'))
 
     def test_wrong_endpoint(self):
         self.assertRaises(Exception, self.client._endpoint, 'wrongwrong')
