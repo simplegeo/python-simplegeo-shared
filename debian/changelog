@@ -1,3 +1,13 @@
+python-simplegeo-shared (2.1.37) lucid; urgency=low
+
+  [ Zooko Ofsimplegeo ]
+  * M-x whitespace-cleanup
+  * add is_valid_ip(), add dependency on ipaddr, bump version to 2.1.36
+
+  [ SimpleGeo Nerds ]
+
+ -- SimpleGeo Nerds <nerds@simplegeo.com>  Tue, 21 Dec 2010 21:24:53 +0000
+
 python-simplegeo-shared (2.0.36) lucid; urgency=low
 
   * UNRELEASED
