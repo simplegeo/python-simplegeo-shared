@@ -8,5 +8,5 @@ Homepage: http://github.com/simplegeo/python-simplegeo-shared/
 
 Package: python-simplegeo-shared
 Architecture: all
-Depends: ${misc:Depends}, ${python:Depends}, python-simplejson (>= 2.1.0), python-pyutil (>= 1.7.9), python-oauth2 (>= 1.1.3~1), python-httplib2 (>= 0.6.0)
+Depends: ${misc:Depends}, ${python:Depends}, python-simplejson (>= 2.1.0), python-pyutil (>= 1.7.9), python-oauth2 (>= 1.1.3~1), python-httplib2 (>= 0.6.0), python-ipaddr (>= 2.1.1)
 Description: Python library for the SimpleGeo API.

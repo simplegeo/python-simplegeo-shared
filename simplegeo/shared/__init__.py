@@ -8,6 +8,8 @@ from decimal import Decimal as D
 from httplib2 import Http
 import oauth2 as oauth
 
+import ipaddr
+
 from urlparse import urljoin
 
 from pyutil import jsonutil as json
@@ -235,3 +237,12 @@ class DecodeError(APIError):
 
     def __repr__(self):
         return "%s content: %s" % (self.description, self.body)
+
+def is_valid_ip(ip):
+    try:
+        ipaddr.IPAddress(ip)
+    except ValueError:
+        return False
+    else:
+        return True
+
