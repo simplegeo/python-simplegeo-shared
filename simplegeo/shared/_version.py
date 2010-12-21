@@ -1,6 +1,14 @@
 # This is the version of this source code.
 
-verstr = "2.2.36"
+manual_verstr = "2.2"
+
+
+
+auto_build_num = "37"
+
+
+
+verstr = manual_verstr + "." + auto_build_num
 try:
     from pyutil.version_class import Version as pyutil_Version
     __version__ = pyutil_Version(verstr)
