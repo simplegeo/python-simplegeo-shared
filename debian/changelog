@@ -1,3 +1,13 @@
+python-simplegeo-shared (2.2.45) lucid; urgency=low
+
+  [ Zooko ]
+  * avoid tickling an obscure bug in ipaddr in our unit test
+    http://code.google.com/p/ipaddr-py/issues/detail?id=71
+
+  [ SimpleGeo Nerds ]
+
+ -- SimpleGeo Nerds <nerds@simplegeo.com>  Wed, 22 Dec 2010 05:46:53 +0000
+
 python-simplegeo-shared (2.2.44) lucid; urgency=low
 
   [ Zooko ]
