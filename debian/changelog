@@ -1,3 +1,15 @@
+python-simplegeo-shared (2.2.43) lucid; urgency=low
+
+  [ Zooko Ofsimplegeo ]
+  * add unit test of is_valid_ip(), raise requirement on pyutil to >=
+    1.8.1 to workaround bad metadata in its packaging in pyutil v1.7.9
+    and v1.8.0, bump version number to 2.2.36
+  * parse new separately-written manual and automated version strings
+
+  [ SimpleGeo Nerds ]
+
+ -- SimpleGeo Nerds <nerds@simplegeo.com>  Wed, 22 Dec 2010 00:04:32 +0000
+
 python-simplegeo-shared (2.1.37) lucid; urgency=low
 
   [ Zooko Ofsimplegeo ]
