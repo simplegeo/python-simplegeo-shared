@@ -105,7 +105,7 @@ class FeatureTest(unittest.TestCase):
         self.assertEquals(record.properties['key'], 'value')
         self.assertEquals(record.properties['type'], 'object')
 
-        self.assertEquals(record.to_json(), '{"geometry": {"type": "Point", "coordinates": [10.0, 11.0]}, "type": "Feature", "id": null, "properties": {"record_id": "my_id", "type": "object", "key": "value"}}')
+        self.assertEquals(record.to_json(), '{"geometry": {"type": "Point", "coordinates": [10.0, 11.0]}, "type": "Feature", "id": null, "properties": {"record_id": "my_id", "type": "object", "private": false, "key": "value"}}')
 
         record_dict = {
                      'geometry' : {
