@@ -92,6 +92,20 @@ class Feature:
         "Polygon", or "Multipolygon". coordinates is a GeoJSON
         coordinates *except* that each lat/lon pair is written in
         order lat, lon instead of the GeoJSON order of lon, at.
+
+        When a Feature is being submitted to the SimpleGeo Places
+        database, if there is a key 'private' in the properties dict
+        which is set to True, then the Feature is intended to be
+        visible only to your user account. If there is no 'private'
+        key or if there is a 'private' key which is set to False, then
+        the Feature is intended to be merged into the publicly visible
+        Places Database.
+
+        Note that even if it is intended to be merged into the public
+        Places Database the actual process of merging it into the
+        public shared database may take some time, and the newly added
+        Feature will be visible to your account right away even if it
+        isn't (yet) visible to the public.
         """
         precondition(deep_validate_lat_lon(coordinates), "The first argument, 'coordinates' is required to be a 2-element sequence of lon, lat for a point (or a more complicated set of coordinates for polygons or multipolygons).", coordinates)
         precondition(simplegeohandle is None or is_simplegeohandle(simplegeohandle), "The third argument, 'simplegeohandle' is required to be None or to match this regex %s" % SIMPLEGEOHANDLE_RSTR, simplegeohandle=simplegeohandle)
@@ -101,7 +115,7 @@ class Feature:
         self.id = simplegeohandle
         self.coordinates = coordinates
         self.geomtype = geomtype
-        self.properties = {}
+        self.properties = { 'private': False }
         if properties:
             self.properties.update(properties)
 
