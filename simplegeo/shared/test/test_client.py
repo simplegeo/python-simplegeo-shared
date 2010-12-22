@@ -22,7 +22,7 @@ class ClientTest(unittest.TestCase):
 
     def test_is_valid_ip(self):
         self.failUnless(is_valid_ip('192.0.32.10'))
-        self.failIf(is_valid_ip('123123123123123'))
+        self.failIf(is_valid_ip('i am not an ip address at all'))
 
     def test_wrong_endpoint(self):
         self.assertRaises(Exception, self.client._endpoint, 'wrongwrong')
