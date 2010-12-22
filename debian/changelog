@@ -1,3 +1,13 @@
+python-simplegeo-shared (2.2.47) lucid; urgency=low
+
+  [ Zooko Ofsimplegeo ]
+  * relax version requirement on ipaddr to 2.0.0 since that is the
+    version on PyPI
+
+  [ SimpleGeo Nerds ]
+
+ -- SimpleGeo Nerds <nerds@simplegeo.com>  Wed, 22 Dec 2010 14:36:53 +0000
+
 python-simplegeo-shared (2.2.45) lucid; urgency=low
 
   [ Zooko ]
