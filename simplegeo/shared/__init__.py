@@ -245,4 +245,3 @@ def is_valid_ip(ip):
         return False
     else:
         return True
-
