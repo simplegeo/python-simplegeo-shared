@@ -1,3 +1,12 @@
+python-simplegeo-shared (2.2.44) lucid; urgency=low
+
+  [ Zooko ]
+  * add a TODO about strange Debian naming convention
+
+  [ SimpleGeo Nerds ]
+
+ -- SimpleGeo Nerds <nerds@simplegeo.com>  Wed, 22 Dec 2010 02:05:53 +0000
+
 python-simplegeo-shared (2.2.43) lucid; urgency=low
 
   [ Zooko Ofsimplegeo ]
