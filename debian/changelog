@@ -1,3 +1,15 @@
+python-simplegeo-shared (2.2.49) lucid; urgency=low
+
+  [ Zooko Ofsimplegeo ]
+  * add docstring explaining the "private" key for the properties dict,
+    and a default setting of private=False We should double-check with
+    Joe that this is the correct default setting.
+  * update test to reflect the presence of the "private" key
+
+  [ SimpleGeo Nerds ]
+
+ -- SimpleGeo Nerds <nerds@simplegeo.com>  Wed, 22 Dec 2010 18:11:09 +0000
+
 python-simplegeo-shared (2.2.47) lucid; urgency=low
 
   [ Zooko Ofsimplegeo ]
