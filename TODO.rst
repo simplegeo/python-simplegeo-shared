@@ -1,0 +1,1 @@
+ * name the Debian package after the Python module instead of after the Python distribution (that sounds worse to me, but that's what Piotr Ożarowski says is the Debian standard) therefore the Debian packages should be named python-simplegeo.shared instead of python-simplegeo-shared.
