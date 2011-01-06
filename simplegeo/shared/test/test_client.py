@@ -14,6 +14,19 @@ API_VERSION = '1.0'
 API_HOST = 'api.simplegeo.com'
 API_PORT = 80
 
+class DecodeErrorTest(unittest.TestCase):
+    def test_repr(self):
+        body = 'this is not json'
+        try:
+            json.loads('this is not json')
+        except ValueError, le:
+            e = DecodeError(body, le)
+        else:
+            self.fail("We were supposed to get an exception from json.loads().")
+
+        self.failUnless("Could not decode JSON" in e.msg, repr(e.msg))
+        self.failUnless('JSONDecodeError' in repr(e), repr(e))
+
 class ClientTest(unittest.TestCase):
     def setUp(self):
         self.client = Client(MY_OAUTH_KEY, MY_OAUTH_SECRET, API_VERSION, API_HOST, API_PORT)
@@ -79,10 +92,7 @@ class ClientTest(unittest.TestCase):
         try:
             self.client.get_feature("SG_4bgzicKFmP89tQFGLGZYy0_34.714646_-86.584970")
         except DecodeError, e:
-            self.failUnlessEqual(e.code,None,repr(e.code))
-            self.failUnless("Could not decode JSON" in e.msg, repr(e.msg))
-            erepr = repr(e)
-            self.failUnless('JSONDecodeError' in erepr, erepr)
+            self.failUnlessEqual(e.code, None, repr(e.code))
 
         self.assertEqual(mockhttp.method_calls[0][0], 'request')
         self.assertEqual(mockhttp.method_calls[0][1][0], 'http://api.simplegeo.com:80/%s/features/%s.json' % (API_VERSION, "SG_4bgzicKFmP89tQFGLGZYy0_34.714646_-86.584970"))
