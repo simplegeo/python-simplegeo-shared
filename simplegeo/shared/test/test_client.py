@@ -84,6 +84,9 @@ class ClientTest(unittest.TestCase):
     def test_type_check_request(self):
         self.failUnlessRaises(TypeError, self.client._request, 'whatever', 'POST', {'bogus': "non string"})
 
+    def test_type_check_unicode_data(self):
+        self.failUnlessRaises(TypeError, self.client._request, 'whatever', 'POST', 'str with nonascii char \x92 in it')
+
     def test_get_feature_bad_json(self):
         mockhttp = mock.Mock()
         mockhttp.request.return_value = ({'status': '200', 'content-type': 'application/json', }, EXAMPLE_BODY + 'some crap')
