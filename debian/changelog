@@ -1,3 +1,13 @@
+python-simplegeo-shared (2.2.55) lucid; urgency=low
+
+  [ Zooko Ofsimplegeo ]
+  * raise instructive exception if the data argument is neither a
+    unicode argument nor a str containing an ascii-encoded string
+
+  [ SimpleGeo Nerds ]
+
+ -- SimpleGeo Nerds <nerds@simplegeo.com>  Mon, 10 Jan 2011 23:11:34 +0000
+
 python-simplegeo-shared (2.2.54) lucid; urgency=low
 
   [ Zooko Ofsimplegeo ]
