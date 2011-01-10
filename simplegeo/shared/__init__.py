@@ -61,6 +61,18 @@ def is_valid_lat(x):
 def is_valid_lon(x):
     return is_numeric(x) and (x <= 180) and (x >= -180)
 
+def to_unicode(s):
+    """ Convert to unicode, raise exception with instructive error
+    message if s is not unicode or ascii. """
+    if not isinstance(s, unicode):
+        if not isinstance(s, str):
+            raise TypeError('You are required to pass either unicode or string here, not: %r (%s)' % (type(s), s))
+        try:
+            s = s.decode('ascii')
+        except UnicodeDecodeError, le:
+            raise TypeError('You are required to pass either a unicode object or an ascii string here. You passed a Python string object which contained non-ascii: %r. The UnicodeDecodeError that resulted from attempting to interpret it as ascii was: %s' % (s, le,))
+    return s
+
 class Feature:
     def __init__(self, coordinates, geomtype='Point', simplegeohandle=None, properties=None):
         """
@@ -207,8 +219,8 @@ class Client(object):
         credentials with oauth.  Returns a tuple of (headers as dict,
         body as string).
         """
-        if data is not None and not isinstance(data, basestring):
-             raise TypeError("data is required to be None or a string or unicode, not %s" % (type(data),))
+        if data is not None:
+            data = to_unicode(data)
         params = {}
         body = data
         request = oauth.Request.from_consumer_and_token(self.consumer,
