@@ -1,3 +1,132 @@
+python-simplegeo-shared (2.2.47) lucid; urgency=low
+
+  [ Zooko Ofsimplegeo ]
+  * relax version requirement on ipaddr to 2.0.0 since that is the
+    version on PyPI
+
+  [ SimpleGeo Nerds ]
+
+ -- SimpleGeo Nerds <nerds@simplegeo.com>  Wed, 22 Dec 2010 14:36:53 +0000
+
+python-simplegeo-shared (2.2.45) lucid; urgency=low
+
+  [ Zooko ]
+  * avoid tickling an obscure bug in ipaddr in our unit test
+    http://code.google.com/p/ipaddr-py/issues/detail?id=71
+
+  [ SimpleGeo Nerds ]
+
+ -- SimpleGeo Nerds <nerds@simplegeo.com>  Wed, 22 Dec 2010 05:46:53 +0000
+
+python-simplegeo-shared (2.2.44) lucid; urgency=low
+
+  [ Zooko ]
+  * add a TODO about strange Debian naming convention
+
+  [ SimpleGeo Nerds ]
+
+ -- SimpleGeo Nerds <nerds@simplegeo.com>  Wed, 22 Dec 2010 02:05:53 +0000
+
+python-simplegeo-shared (2.2.43) lucid; urgency=low
+
+  [ Zooko Ofsimplegeo ]
+  * add unit test of is_valid_ip(), raise requirement on pyutil to >=
+    1.8.1 to workaround bad metadata in its packaging in pyutil v1.7.9
+    and v1.8.0, bump version number to 2.2.36
+  * parse new separately-written manual and automated version strings
+
+  [ SimpleGeo Nerds ]
+
+ -- SimpleGeo Nerds <nerds@simplegeo.com>  Wed, 22 Dec 2010 00:04:32 +0000
+
+python-simplegeo-shared (2.1.37) lucid; urgency=low
+
+  [ Zooko Ofsimplegeo ]
+  * M-x whitespace-cleanup
+  * add is_valid_ip(), add dependency on ipaddr, bump version to 2.1.36
+
+  [ SimpleGeo Nerds ]
+
+ -- SimpleGeo Nerds <nerds@simplegeo.com>  Tue, 21 Dec 2010 21:24:53 +0000
+
+python-simplegeo-shared (2.0.36) lucid; urgency=low
+
+  * UNRELEASED
+
+ -- SimpleGeo Nerds <nerds@simplegeo.com>  Mon, 20 Dec 2010 18:17:58 +0000
+
+python-simplegeo-shared (2.0.34) lucid; urgency=low
+
+  [ Zooko Ofsimplegeo ]
+  * we require the "extra" functionality of pyutil which is jsonutil
+    (Other users of pyutil, which don't use jsonutil, don't need pyutil
+    to depend on simplejson.)
+
+  [ SimpleGeo Nerds ]
+
+ -- SimpleGeo Nerds <nerds@simplegeo.com>  Mon, 20 Dec 2010 17:30:45 +0000
+
+python-simplegeo-shared (2.0.33) lucid; urgency=low
+
+  [ ansate ]
+  * set headers to None before request, and test that this works
+
+  [ SimpleGeo Nerds ]
+
+ -- SimpleGeo Nerds <nerds@simplegeo.com>  Wed, 15 Dec 2010 23:36:22 +0000
+
+python-simplegeo-shared (2.0.32) lucid; urgency=low
+
+  [ Zooko Ofsimplegeo ]
+  * pyutil's _assert() acts a lot like assert but still gets checked
+    when -O (and also gives more information about things when the
+    expression evaluates to False)
+  * this bound doesn't need to be a float when the rest are int
+
+  [ SimpleGeo Nerds ]
+
+ -- SimpleGeo Nerds <nerds@simplegeo.com>  Wed, 15 Dec 2010 23:33:23 +0000
+
+python-simplegeo-shared (2.0.29) lucid; urgency=low
+
+  [ Zooko Ofsimplegeo ]
+  * make error message more clear if a Feature is constructed with the
+    wrong type of arguments -- having "coordinates" shaped wrong is the
+    more common mistake (thanks Andrew Mager)
+
+  [ SimpleGeo Nerds ]
+
+ -- SimpleGeo Nerds <nerds@simplegeo.com>  Wed, 15 Dec 2010 22:49:22 +0000
+
+python-simplegeo-shared (2.0.28) lucid; urgency=low
+
+  [ Zooko Ofsimplegeo ]
+  * a couple of tiny cleanups in the setup
+  * more detailed error message if coordinates fail to validate as being
+    a set of lat, lon pairs
+
+  [ SimpleGeo Nerds ]
+
+ -- SimpleGeo Nerds <nerds@simplegeo.com>  Tue, 14 Dec 2010 23:05:02 +0000
+
+python-simplegeo-shared (2.0.27) lucid; urgency=low
+
+  * UNRELEASED
+
+ -- SimpleGeo Nerds <nerds@simplegeo.com>  Tue, 14 Dec 2010 20:30:53 +0000
+
+python-simplegeo-shared (2.0.26) lucid; urgency=low
+
+  * UNRELEASED
+
+ -- SimpleGeo Nerds <nerds@simplegeo.com>  Tue, 14 Dec 2010 19:52:11 +0000
+
+python-simplegeo-shared (2.0.22) lucid; urgency=low
+
+  * UNRELEASED
+
+ -- SimpleGeo Nerds <nerds@simplegeo.com>  Mon, 13 Dec 2010 22:37:30 +0000
+
 python-simplegeo-shared (2.0.21) lucid; urgency=low
 
   [ Zooko Ofsimplegeo ]

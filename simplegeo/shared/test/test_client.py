@@ -63,17 +63,46 @@ class LatLonValidationTest(unittest.TestCase):
         self.failIf(is_valid_lat(-90.0002))
         self.failIf(is_valid_lat(D('-90.0002')))
 
+class DecodeErrorTest(unittest.TestCase):
+    def test_repr(self):
+        body = 'this is not json'
+        try:
+            json.loads('this is not json')
+        except ValueError, le:
+            e = DecodeError(body, le)
+        else:
+            self.fail("We were supposed to get an exception from json.loads().")
+
+        self.failUnless("Could not decode JSON" in e.msg, repr(e.msg))
+        self.failUnless('JSONDecodeError' in repr(e), repr(e))
+
 class ClientTest(unittest.TestCase):
     def setUp(self):
         self.client = Client(MY_OAUTH_KEY, MY_OAUTH_SECRET, API_VERSION, API_HOST, API_PORT)
         self.query_lat = D('37.8016')
         self.query_lon = D('-122.4783')
 
+    def test_is_valid_ip(self):
+        self.failUnless(is_valid_ip('192.0.32.10'))
+        self.failIf(is_valid_ip('i am not an ip address at all'))
+
     def test_wrong_endpoint(self):
         self.assertRaises(Exception, self.client._endpoint, 'wrongwrong')
 
     def test_missing_argument(self):
         self.assertRaises(Exception, self.client._endpoint, 'feature')
+
+    def test_get_most_recent_http_headers(self):
+        h = self.client.get_most_recent_http_headers()
+        self.failUnlessEqual(h, None)
+
+        mockhttp = mock.Mock()
+        mockhttp.request.return_value = ({'status': '200', 'content-type': 'application/json', 'thingie': "just to see if you're listening"}, EXAMPLE_POINT_BODY)
+        self.client.http = mockhttp
+
+        self.client.get_feature("SG_4bgzicKFmP89tQFGLGZYy0_34.714646_-86.584970")
+        h = self.client.get_most_recent_http_headers()
+        self.failUnlessEqual(h, {'status': '200', 'content-type': 'application/json', 'thingie': "just to see if you're listening"})
 
     def test_get_point_feature(self):
         mockhttp = mock.Mock()
@@ -86,8 +115,6 @@ class ClientTest(unittest.TestCase):
         self.assertEqual(mockhttp.method_calls[0][1][1], 'GET')
         # the code under test is required to have json-decoded this before handing it back
         self.failUnless(isinstance(res, Feature), (repr(res), type(res)))
-
-        self.failUnless(self.client.get_most_recent_http_headers(), {'status': '200', 'content-type': 'application/json', 'thingie': "just to see if you're listening"})
 
     def test_get_polygon_feature(self):
         mockhttp = mock.Mock()
@@ -117,10 +144,7 @@ class ClientTest(unittest.TestCase):
         try:
             self.client.get_feature("SG_4bgzicKFmP89tQFGLGZYy0_34.714646_-86.584970")
         except DecodeError, e:
-            self.failUnlessEqual(e.code,None,repr(e.code))
-            self.failUnless("Could not decode JSON" in e.msg, repr(e.msg))
-            erepr = repr(e)
-            self.failUnless('JSONDecodeError' in erepr, erepr)
+            self.failUnlessEqual(e.code, None, repr(e.code))
 
         self.assertEqual(mockhttp.method_calls[0][0], 'request')
         self.assertEqual(mockhttp.method_calls[0][1][0], 'http://api.simplegeo.com:80/%s/features/%s.json' % (API_VERSION, "SG_4bgzicKFmP89tQFGLGZYy0_34.714646_-86.584970"))

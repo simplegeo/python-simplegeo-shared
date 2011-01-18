@@ -10,13 +10,20 @@ try:
 except EnvironmentError:
     pass # Okay, there is no version file.
 else:
-    VSRE = r"^verstr = ['\"]([^'\"]*)['\"]"
-    mo = re.search(VSRE, verstrline, re.M)
+    MVSRE = r"^manual_verstr *= *['\"]([^'\"]*)['\"]"
+    mo = re.search(MVSRE, verstrline, re.M)
     if mo:
-        verstr = mo.group(1)
+        mverstr = mo.group(1)
     else:
         print "unable to find version in %s" % (VERSIONFILE,)
         raise RuntimeError("if %s.py exists, it must be well-formed" % (VERSIONFILE,))
+    AVSRE = r"^auto_build_num *= *['\"]([^'\"]*)['\"]"
+    mo = re.search(AVSRE, verstrline, re.M)
+    if mo:
+        averstr = mo.group(1)
+    else:
+        averstr = ''
+    verstr = '.'.join([mverstr, averstr])
 
 setup_requires = []
 tests_require = ['mock']
@@ -44,7 +51,7 @@ setup(name=PKG,
       url="http://github.com/simplegeo/python-simplegeo-shared",
       packages = find_packages(),
       license = "MIT License",
-      install_requires=['httplib2>=0.6.0', 'oauth2>=1.1.3', 'pyutil >= 1.7.9'],
+      install_requires=['httplib2>=0.6.0', 'oauth2>=1.1.3', 'pyutil[jsonutil] >= 1.8.1', 'ipaddr >= 2.0.0'],
       keywords="simplegeo",
       zip_safe=False, # actually it is zip safe, but zipping packages doesn't help with anything and can cause some problems (http://bugs.python.org/setuptools/issue33 )
       namespace_packages = ['simplegeo'],

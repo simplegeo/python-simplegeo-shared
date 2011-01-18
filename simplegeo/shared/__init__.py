@@ -8,10 +8,12 @@ from decimal import Decimal as D
 from httplib2 import Http
 import oauth2 as oauth
 
+import ipaddr
+
 from urlparse import urljoin
 
 from pyutil import jsonutil as json
-from pyutil.assertutil import precondition
+from pyutil.assertutil import precondition, _assert
 
 # example: http://api.simplegeo.com/1.0/feature/abcdefghijklmnopqrstuvwyz.json
 
@@ -26,8 +28,8 @@ def swap(tupleab):
 
 def deep_swap(struc):
     if is_numeric(struc[0]):
-        assert len(struc) == 2
-        assert is_numeric(struc[1])
+        _assert (len(struc) == 2, (type(struc), repr(struc)))
+        _assert (is_numeric(struc[1]), (type(struc), repr(struc)))
         return swap(struc)
     return [deep_swap(sub) for sub in struc]
 
@@ -135,14 +137,25 @@ class Feature:
         coordinates *except* that each lat/lon pair is written in
         order lat, lon instead of the GeoJSON order of lon, at.
 
-        If you wish your Feature to be kept out of the open, public
-        Places database then set the "private" key in the properties
-        dict to be True. (Its default value is False.)
+        When a Feature is being submitted to the SimpleGeo Places
+        database, if there is a key 'private' in the properties dict
+        which is set to True, then the Feature is intended to be
+        visible only to your user account. If there is no 'private'
+        key or if there is a 'private' key which is set to False, then
+        the Feature is intended to be merged into the publicly visible
+        Places Database.
+
+        Note that even if it is intended to be merged into the public
+        Places Database the actual process of merging it into the
+        public shared database may take some time, and the newly added
+        Feature will be visible to your account right away even if it
+        isn't (yet) visible to the public.
 
         For the meaning of strict_lon_validation, please see the
         function is_valid_lon().
         """
-        precondition(simplegeohandle is None or is_simplegeohandle(simplegeohandle), "simplegeohandle is required to be None or to match the regex %s" % SIMPLEGEOHANDLE_RSTR, simplegeohandle=simplegeohandle)
+        precondition(deep_validate_lat_lon(coordinates), "The first argument, 'coordinates' is required to be a 2-element sequence of lon, lat for a point (or a more complicated set of coordinates for polygons or multipolygons).", coordinates)
+        precondition(simplegeohandle is None or is_simplegeohandle(simplegeohandle), "The third argument, 'simplegeohandle' is required to be None or to match this regex %s" % SIMPLEGEOHANDLE_RSTR, simplegeohandle=simplegeohandle)
         record_id = properties and properties.get('record_id') or None
         precondition(record_id is None or isinstance(record_id, basestring), "record_id is required to be None or a string.", record_id=record_id, properties=properties)
         self.strict_lon_validation = strict_lon_validation
@@ -212,6 +225,7 @@ class Client(object):
         self.signature = oauth.SignatureMethod_HMAC_SHA1()
         self.uri = "http://%s:%s" % (host, port)
         self.http = Http()
+        self.headers = None
 
     def get_most_recent_http_headers(self):
         """ Intended for debugging -- return the most recent HTTP
@@ -287,3 +301,11 @@ class DecodeError(APIError):
 
     def __repr__(self):
         return "%s content: %s" % (self.description, self.body)
+
+def is_valid_ip(ip):
+    try:
+        ipaddr.IPAddress(ip)
+    except ValueError:
+        return False
+    else:
+        return True

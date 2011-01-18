@@ -24,6 +24,21 @@ class FeatureTest(unittest.TestCase):
                              [[[(2.0, 102.0), (2.0, 103.0), (3.0, 103.0), (3.0, 102.0), (2.0, 102.0)]], [[(0.0, 100.0), (0.0, 101.0), (1.0, 101.0), (1.0, 100.0), (0.0, 100.0)], [(0.2, 100.2), (0.2, 100.8), (0.8, 100.8), (0.8, 100.2), (0.2, 100.2)]]]
                              )
 
+    def test_record_constructor_useful_validation_error_message(self):
+        try:
+            Feature(coordinates=[181, D('10.0')], properties={'record_id': 'my_id'})
+        except AssertionError, e:
+            self.failUnless('181' in str(e), str(e))
+        else:
+            self.fail('Should have raised exception.')
+
+        try:
+            Feature(coordinates=[-90, D('181.0')], properties={'record_id': 'my_id'})
+        except AssertionError, e:
+            self.failUnless('181' in str(e), str(e))
+        else:
+            self.fail('Should have raised exception.')
+
     def test_record_constructor(self):
         self.failUnlessRaises(TypeError, Feature, D('11.0'), D('10.0'), properties={'record_id': 'my_id'})
 
@@ -111,6 +126,8 @@ class FeatureTest(unittest.TestCase):
         self.assertEquals(record.properties.get('record_id'), 'my_id')
         self.assertEquals(record.properties['key'], 'value')
         self.assertEquals(record.properties['type'], 'object')
+
+        self.assertEquals(record.to_json(), '{"geometry": {"type": "Point", "coordinates": [10.0, 11.0]}, "type": "Feature", "id": null, "properties": {"record_id": "my_id", "type": "object", "private": false, "key": "value"}}')
 
         record_dict = {
                      'geometry' : {
