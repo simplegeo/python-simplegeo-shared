@@ -1,3 +1,70 @@
+python-simplegeo-shared (2.2.57) lucid; urgency=low
+
+  * UNRELEASED
+
+ -- SimpleGeo Nerds <nerds@simplegeo.com>  Tue, 18 Jan 2011 16:43:58 +0000
+
+python-simplegeo-shared (2.2.56) lucid; urgency=low
+
+  * UNRELEASED
+
+ -- SimpleGeo Nerds <nerds@simplegeo.com>  Tue, 18 Jan 2011 16:41:00 +0000
+
+python-simplegeo-shared (2.2.55) lucid; urgency=low
+
+  [ Zooko Ofsimplegeo ]
+  * raise instructive exception if the data argument is neither a
+    unicode argument nor a str containing an ascii-encoded string
+
+  [ SimpleGeo Nerds ]
+
+ -- SimpleGeo Nerds <nerds@simplegeo.com>  Mon, 10 Jan 2011 23:11:34 +0000
+
+python-simplegeo-shared (2.2.54) lucid; urgency=low
+
+  [ Zooko Ofsimplegeo ]
+  * test the repr of DecodeError separately from the tests of the client
+
+  [ SimpleGeo Nerds ]
+
+ -- SimpleGeo Nerds <nerds@simplegeo.com>  Thu, 06 Jan 2011 18:01:04 +0000
+
+python-simplegeo-shared (2.2.53) lucid; urgency=low
+
+  * UNRELEASED
+
+ -- SimpleGeo Nerds <nerds@simplegeo.com>  Tue, 04 Jan 2011 23:03:05 +0000
+
+python-simplegeo-shared (2.2.52) lucid; urgency=low
+
+  * UNRELEASED
+
+ -- SimpleGeo Nerds <nerds@simplegeo.com>  Tue, 04 Jan 2011 19:12:49 +0000
+
+python-simplegeo-shared (2.2.51) lucid; urgency=low
+
+  * UNRELEASED
+
+ -- SimpleGeo Nerds <nerds@simplegeo.com>  Tue, 04 Jan 2011 18:50:17 +0000
+
+python-simplegeo-shared (2.2.50) lucid; urgency=low
+
+  * UNRELEASED
+
+ -- SimpleGeo Nerds <nerds@simplegeo.com>  Thu, 23 Dec 2010 17:28:52 +0000
+
+python-simplegeo-shared (2.2.49) lucid; urgency=low
+
+  [ Zooko Ofsimplegeo ]
+  * add docstring explaining the "private" key for the properties dict,
+    and a default setting of private=False We should double-check with
+    Joe that this is the correct default setting.
+  * update test to reflect the presence of the "private" key
+
+  [ SimpleGeo Nerds ]
+
+ -- SimpleGeo Nerds <nerds@simplegeo.com>  Wed, 22 Dec 2010 18:11:09 +0000
+
 python-simplegeo-shared (2.2.47) lucid; urgency=low
 
   [ Zooko Ofsimplegeo ]
