@@ -154,7 +154,7 @@ class Feature:
         For the meaning of strict_lon_validation, please see the
         function is_valid_lon().
         """
-        precondition(deep_validate_lat_lon(coordinates), "The first argument, 'coordinates' is required to be a 2-element sequence of lon, lat for a point (or a more complicated set of coordinates for polygons or multipolygons).", coordinates)
+        precondition(deep_validate_lat_lon(coordinates, strict_lon_validation=strict_lon_validation), "The first argument, 'coordinates' is required to be a 2-element sequence of lon, lat for a point (or a more complicated set of coordinates for polygons or multipolygons).", coordinates)
         precondition(simplegeohandle is None or is_simplegeohandle(simplegeohandle), "The third argument, 'simplegeohandle' is required to be None or to match this regex %s" % SIMPLEGEOHANDLE_RSTR, simplegeohandle=simplegeohandle)
         record_id = properties and properties.get('record_id') or None
         precondition(record_id is None or isinstance(record_id, basestring), "record_id is required to be None or a string.", record_id=record_id, properties=properties)

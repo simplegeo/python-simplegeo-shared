@@ -27,15 +27,22 @@ class FeatureTest(unittest.TestCase):
     def test_record_constructor_useful_validation_error_message(self):
         try:
             Feature(coordinates=[181, D('10.0')], properties={'record_id': 'my_id'})
-        except AssertionError, e:
+        except TypeError, e:
             self.failUnless('181' in str(e), str(e))
         else:
             self.fail('Should have raised exception.')
 
         try:
-            Feature(coordinates=[-90, D('181.0')], properties={'record_id': 'my_id'})
-        except AssertionError, e:
+            Feature(coordinates=[-90, D('181.0')], properties={'record_id': 'my_id'}, strict_lon_validation=True)
+        except TypeError, e:
             self.failUnless('181' in str(e), str(e))
+        else:
+            self.fail('Should have raised exception.')
+
+        try:
+            Feature(coordinates=[-90, D('361.0')], properties={'record_id': 'my_id'})
+        except TypeError, e:
+            self.failUnless('361' in str(e), str(e))
         else:
             self.fail('Should have raised exception.')
 

@@ -1,6 +1,6 @@
 import unittest
 from pyutil import jsonutil as json
-from simplegeo.shared import Client, APIError, DecodeError, Feature, is_valid_lat, is_valid_lon, to_unicode
+from simplegeo.shared import Client, APIError, DecodeError, Feature, is_valid_lat, is_valid_lon, is_valid_ip, to_unicode
 
 from decimal import Decimal as D
 
