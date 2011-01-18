@@ -25,13 +25,13 @@ class FeatureTest(unittest.TestCase):
                              )
 
     def test_record_constructor(self):
-        self.failUnlessRaises(AssertionError, Feature, D('11.0'), D('10.0'), properties={'record_id': 'my_id'})
+        self.failUnlessRaises(TypeError, Feature, D('11.0'), D('10.0'), properties={'record_id': 'my_id'})
 
         # lat exceeds bound
-        self.failUnlessRaises(AssertionError, Feature, (D('91.0'), D('10.1')), properties={'record_id': 'my_id'})
+        self.failUnlessRaises(TypeError, Feature, (D('91.0'), D('10.1')), properties={'record_id': 'my_id'})
 
         # lon exceeds bound
-        self.failUnlessRaises(AssertionError, Feature, (D('10.1'), D('180.1')), properties={'record_id': 'my_id'})
+        self.failUnlessRaises(TypeError, Feature, (D('10.1'), D('180.1')), properties={'record_id': 'my_id'}, strict_lon_validation=True)
 
         record = Feature(coordinates=(D('11.0'), D('10.0')), properties={'record_id': 'my_id'})
         self.failUnlessEqual(record.properties.get('record_id'), 'my_id')
@@ -68,6 +68,28 @@ class FeatureTest(unittest.TestCase):
 
         jsondict = record.to_dict()
         self.failUnlessEqual(jsondict['geometry']['coordinates'][0][0], (179.9, 11.))
+
+    def test_record_from_dict_lon_validation(self):
+        record_dict = {
+                     'geometry' : {
+                                   'type' : 'Point',
+                                   'coordinates' : [D('181.0'), D('11.0')]
+                                   },
+                     'type' : 'Feature',
+                     'properties' : {
+                                     'record_id' : 'my_id',
+                                     'key' : 'value'  ,
+                                     'type' : 'object'
+                                     }
+                     }
+
+        self.failUnlessRaises(TypeError, Feature.from_dict, record_dict, True)
+        record = Feature.from_dict(record_dict, strict_lon_validation=False)
+        self.assertEquals(record.coordinates[0], D('11.0'))
+        self.assertEquals(record.coordinates[1], D('181.0'))
+        self.assertEquals(record.properties.get('record_id'), 'my_id')
+        self.assertEquals(record.properties['key'], 'value')
+        self.assertEquals(record.properties['type'], 'object')
 
     def test_record_from_dict(self):
         record_dict = {

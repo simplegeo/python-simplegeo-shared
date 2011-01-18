@@ -1,6 +1,6 @@
 import unittest
 from pyutil import jsonutil as json
-from simplegeo.shared import Client, APIError, DecodeError, Feature
+from simplegeo.shared import Client, APIError, DecodeError, Feature, is_valid_lat, is_valid_lon, to_unicode
 
 from decimal import Decimal as D
 
@@ -13,6 +13,55 @@ TESTING_LAYER = 'TESTING_LAYER'
 API_VERSION = '1.0'
 API_HOST = 'api.simplegeo.com'
 API_PORT = 80
+
+class ReallyEqualMixin:
+    def failUnlessReallyEqual(self, a, b, msg='', *args, **kwargs):
+        self.failUnlessEqual(a, b, msg, *args, **kwargs)
+        self.failUnlessEqual(type(a), type(b), msg="a :: %r, b :: %r, %r" % (a, b, msg), *args, **kwargs)
+
+class ToUnicodeTest(unittest.TestCase, ReallyEqualMixin):
+    def test_to_unicode(self):
+        self.failUnlessReallyEqual(to_unicode('x'), u'x')
+        self.failUnlessReallyEqual(to_unicode(u'x'), u'x')
+        self.failUnlessRaises(TypeError, to_unicode, '\xe2\x9d\xa4')
+
+class LatLonValidationTest(unittest.TestCase):
+
+    def test_is_valid_lon(self):
+        self.failUnless(is_valid_lon(180, strict=True))
+        self.failUnless(is_valid_lon(180.0, strict=True))
+        self.failUnless(is_valid_lon(D('180.0'), strict=True))
+        self.failUnless(is_valid_lon(-180, strict=True))
+        self.failUnless(is_valid_lon(-180.0, strict=True))
+        self.failUnless(is_valid_lon(D('-180.0'), strict=True))
+
+        self.failIf(is_valid_lon(180.0002, strict=True))
+        self.failIf(is_valid_lon(D('180.0002'), strict=True))
+        self.failIf(is_valid_lon(-180.0002, strict=True))
+        self.failIf(is_valid_lon(D('-180.0002'), strict=True))
+
+        self.failUnless(is_valid_lon(180.0002, strict=False))
+        self.failUnless(is_valid_lon(D('180.0002'), strict=False))
+        self.failUnless(is_valid_lon(-180.0002, strict=False))
+        self.failUnless(is_valid_lon(D('-180.0002'), strict=False))
+
+        self.failIf(is_valid_lon(360.0002, strict=False))
+        self.failIf(is_valid_lon(D('360.0002'), strict=False))
+        self.failIf(is_valid_lon(-360.0002, strict=False))
+        self.failIf(is_valid_lon(D('-360.0002'), strict=False))
+
+    def test_is_valid_lat(self):
+        self.failUnless(is_valid_lat(90))
+        self.failUnless(is_valid_lat(90.0))
+        self.failUnless(is_valid_lat(D('90.0')))
+        self.failUnless(is_valid_lat(-90))
+        self.failUnless(is_valid_lat(-90.0))
+        self.failUnless(is_valid_lat(D('-90.0')))
+
+        self.failIf(is_valid_lat(90.0002))
+        self.failIf(is_valid_lat(D('90.0002')))
+        self.failIf(is_valid_lat(-90.0002))
+        self.failIf(is_valid_lat(D('-90.0002')))
 
 class ClientTest(unittest.TestCase):
     def setUp(self):

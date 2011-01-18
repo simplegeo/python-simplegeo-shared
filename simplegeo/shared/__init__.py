@@ -31,16 +31,22 @@ def deep_swap(struc):
         return swap(struc)
     return [deep_swap(sub) for sub in struc]
 
-def deep_validate_lat_lon(struc):
-    precondition(isinstance(struc, (list, tuple, set)), 'argument must be a sequence (of sequences of...) numbers')
+def deep_validate_lat_lon(struc, strict_lon_validation=False):
+    """
+    For the meaning of strict_lon_validation, please see the function
+    is_valid_lon().
+    """
+    if not isinstance(struc, (list, tuple, set)):
+        raise TypeError('argument is required to be a sequence (of sequences of...) numbers, not: %s :: %s' % (struc, type(struc)))
     if is_numeric(struc[0]):
-        assert len(struc) == 2
-        assert is_numeric(struc[1])
-        assert is_valid_lat(struc[0])
-        assert is_valid_lon(struc[1])
+        if not len(struc) == 2:
+            raise TypeError("The leaf element of this structure is required to be a tuple of length 2 (to hold a lat and lon).")
+
+        _assert_valid_lat(struc[0])
+        _assert_valid_lon(struc[1], strict=strict_lon_validation)
     else:
         for sub in struc:
-            deep_validate_lat_lon(sub)
+            deep_validate_lat_lon(sub, strict_lon_validation=strict_lon_validation)
     return True
 
 SIMPLEGEOHANDLE_RSTR=r"""SG_[A-Za-z0-9]{22}(?:_-?[0-9]{1,3}(?:\.[0-9]+)?_-?[0-9]{1,3}(?:\.[0-9]+)?)?(?:@[0-9]+)?$"""
@@ -56,8 +62,34 @@ def is_numeric(x):
 def is_valid_lat(x):
     return is_numeric(x) and (x <= 90) and (x >= -90)
 
-def is_valid_lon(x):
-    return is_numeric(x) and (x <= 180) and (x >= -180.0)
+def _assert_valid_lat(x):
+    if not is_valid_lat(x):
+        raise TypeError("not a valid lat: %s" % (x,))
+
+def _assert_valid_lon(x, strict=False):
+    if not is_valid_lon(x, strict=strict):
+        raise TypeError("not a valid lon (strict=%s): %s" % (strict, x,))
+
+def is_valid_lon(x, strict=False):
+    """
+    Longitude is technically defined as extending from -180 to
+    180. However in practice people sometimes prefer to use longitudes
+    which have "wrapped around" past 180. For example, if you are
+    drawing a polygon around modern-day Russia almost all of it is in
+    the Eastern Hemisphere, which means its longitudes are almost all
+    positive numbers, but the easternmost part of it (Big Diomede
+    Island) lies a few degrees east of the International Date Line,
+    and it is sometimes more convenient to describe it as having
+    longitude 190.9 instead of having longitude -169.1.
+
+    If strict=True then is_valid_lon() requires a number to be in
+    [-180..180] to be considered a valid longitude. If strict=False
+    (the default) then it requires the number to be in [-360..360].
+    """
+    if strict:
+        return is_numeric(x) and (x <= 180) and (x >= -180)
+    else:
+        return is_numeric(x) and (x <= 360) and (x >= -360)
 
 def to_unicode(s):
     """ Convert to unicode, raise exception with instructive error
@@ -72,7 +104,7 @@ def to_unicode(s):
     return s
 
 class Feature:
-    def __init__(self, coordinates, geomtype='Point', simplegeohandle=None, properties=None):
+    def __init__(self, coordinates, geomtype='Point', simplegeohandle=None, properties=None, strict_lon_validation=False):
         """
         The simplegeohandle and the record_id are both optional -- you
         can have one or the other or both or neither.
@@ -106,11 +138,15 @@ class Feature:
         If you wish your Feature to be kept out of the open, public
         Places database then set the "private" key in the properties
         dict to be True. (Its default value is False.)
+
+        For the meaning of strict_lon_validation, please see the
+        function is_valid_lon().
         """
         precondition(simplegeohandle is None or is_simplegeohandle(simplegeohandle), "simplegeohandle is required to be None or to match the regex %s" % SIMPLEGEOHANDLE_RSTR, simplegeohandle=simplegeohandle)
         record_id = properties and properties.get('record_id') or None
         precondition(record_id is None or isinstance(record_id, basestring), "record_id is required to be None or a string.", record_id=record_id, properties=properties)
-        precondition(deep_validate_lat_lon(coordinates), coordinates)
+        self.strict_lon_validation = strict_lon_validation
+        precondition(deep_validate_lat_lon(coordinates, strict_lon_validation=self.strict_lon_validation), coordinates)
         self.id = simplegeohandle
         self.coordinates = coordinates
         self.geomtype = geomtype
@@ -119,16 +155,18 @@ class Feature:
             self.properties.update(properties)
 
     @classmethod
-    def from_dict(cls, data):
+    def from_dict(cls, data, strict_lon_validation=False):
         """
         data is a GeoJSON standard data structure, including that the
         coordinates are in GeoJSON order (lon, lat) instead of
         SimpleGeo order (lat, lon)
         """
         assert isinstance(data, dict), (type(data), repr(data))
+        coordinates = deep_swap(data['geometry']['coordinates'])
+        precondition(deep_validate_lat_lon(coordinates, strict_lon_validation=strict_lon_validation), coordinates)
         feature = cls(
             simplegeohandle = data.get('id'),
-            coordinates = deep_swap(data['geometry']['coordinates']),
+            coordinates = coordinates,
             geomtype = data['geometry']['type'],
             properties = data.get('properties')
             )
