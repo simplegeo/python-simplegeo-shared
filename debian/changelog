@@ -1,3 +1,21 @@
+python-simplegeo-shared (2.3.58) lucid; urgency=low
+
+  [ Zooko Ofsimplegeo ]
+  * add "private" field to properties, default to False, add doc
+  * raise instructive exception if the data argument is neither a
+    unicode argument nor a str containing an ascii-encoded string
+  *  * loosen validation on longitudes to allow longitudes up to 360
+    degrees away from the Prime Meridian (optionally -- you can request
+    stricter validation)  * do lat/lon validation on Feature.from_dict()
+    * validation failures raise TypeError, not AssertionError, and
+    validation proceeds even if PYTHONOPTIMIZE  * add unit test of
+    to_unicode()  * raise version number to 2.1
+  * fix test cases after merge
+
+  [ SimpleGeo Nerds ]
+
+ -- SimpleGeo Nerds <nerds@simplegeo.com>  Tue, 18 Jan 2011 17:33:15 +0000
+
 python-simplegeo-shared (2.2.57) lucid; urgency=low
 
   * UNRELEASED
