@@ -1,3 +1,13 @@
+python-simplegeo-shared (2.3.70) lucid; urgency=low
+
+  [ Zooko Ofsimplegeo ]
+  * raise the requirement on the version of python-oauth2 to v1.5 That
+    version has better handling unicode which we rely on.
+
+  [ SimpleGeo Nerds ]
+
+ -- SimpleGeo Nerds <nerds@simplegeo.com>  Mon, 24 Jan 2011 22:09:34 +0000
+
 python-simplegeo-shared (2.3.69) lucid; urgency=low
 
   * UNRELEASED
