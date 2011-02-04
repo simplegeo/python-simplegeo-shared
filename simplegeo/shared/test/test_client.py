@@ -23,7 +23,7 @@ class ToUnicodeTest(unittest.TestCase, ReallyEqualMixin):
     def test_to_unicode(self):
         self.failUnlessReallyEqual(to_unicode('x'), u'x')
         self.failUnlessReallyEqual(to_unicode(u'x'), u'x')
-        self.failUnlessRaises(TypeError, to_unicode, '\xe2\x9d\xa4')
+        self.failUnlessReallyEqual(to_unicode('\xe2\x9d\xa4'), u'\u2764')
 
 class LatLonValidationTest(unittest.TestCase):
 
@@ -92,6 +92,15 @@ class ClientTest(unittest.TestCase):
     def test_missing_argument(self):
         self.assertRaises(Exception, self.client._endpoint, 'feature')
 
+    def test_get_feature_useful_validation_error_message(self):
+        c = Client('whatever', 'whatever')
+        try:
+            c.get_feature('wrong thing')
+        except TypeError, e:
+            self.failUnless(str(e).startswith('simplegeohandle is required to match '), str(e))
+        else:
+            self.fail('Should have raised exception.')
+
     def test_get_most_recent_http_headers(self):
         h = self.client.get_most_recent_http_headers()
         self.failUnlessEqual(h, None)
@@ -128,7 +137,6 @@ class ClientTest(unittest.TestCase):
         self.assertEqual(mockhttp.method_calls[0][1][1], 'GET')
         # the code under test is required to have json-decoded this before handing it back
         self.failUnless(isinstance(res, Feature), (repr(res), type(res)))
-
 
     def test_type_check_request(self):
         self.failUnlessRaises(TypeError, self.client._request, 'whatever', 'POST', {'bogus': "non string"})

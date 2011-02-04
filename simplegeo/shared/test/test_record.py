@@ -28,7 +28,8 @@ class FeatureTest(unittest.TestCase):
         try:
             Feature(coordinates=[181, D('10.0')], properties={'record_id': 'my_id'})
         except TypeError, e:
-            self.failUnless('181' in str(e), str(e))
+            self.failUnless(str(e).startswith('The first argument'), str(e))
+            self.failUnless('is required to be a 2-element sequence' in str(e), str(e))
         else:
             self.fail('Should have raised exception.')
 

@@ -95,14 +95,14 @@ def is_valid_lon(x, strict=False):
 
 def to_unicode(s):
     """ Convert to unicode, raise exception with instructive error
-    message if s is not unicode or ascii. """
+    message if s is not unicode, ascii, or utf-8. """
     if not isinstance(s, unicode):
         if not isinstance(s, str):
             raise TypeError('You are required to pass either unicode or string here, not: %r (%s)' % (type(s), s))
         try:
-            s = s.decode('ascii')
+            s = s.decode('utf-8')
         except UnicodeDecodeError, le:
-            raise TypeError('You are required to pass either a unicode object or an ascii string here. You passed a Python string object which contained non-ascii: %r. The UnicodeDecodeError that resulted from attempting to interpret it as ascii was: %s' % (s, le,))
+            raise TypeError('You are required to pass either a unicode object or a utf-8 string here. You passed a Python string object which contained non-utf-8: %r. The UnicodeDecodeError that resulted from attempting to interpret it as utf-8 was: %s' % (s, le,))
     return s
 
 class Feature:
@@ -154,12 +154,19 @@ class Feature:
         For the meaning of strict_lon_validation, please see the
         function is_valid_lon().
         """
-        precondition(deep_validate_lat_lon(coordinates, strict_lon_validation=strict_lon_validation), "The first argument, 'coordinates' is required to be a 2-element sequence of lon, lat for a point (or a more complicated set of coordinates for polygons or multipolygons).", coordinates)
-        precondition(simplegeohandle is None or is_simplegeohandle(simplegeohandle), "The third argument, 'simplegeohandle' is required to be None or to match this regex %s" % SIMPLEGEOHANDLE_RSTR, simplegeohandle=simplegeohandle)
+        try:
+            deep_validate_lat_lon(coordinates, strict_lon_validation=strict_lon_validation)
+        except TypeError, le:
+            raise TypeError("The first argument, 'coordinates' is required to be a 2-element sequence of lon, lat for a point (or a more complicated set of coordinates for polygons or multipolygons), but it was %s :: %r. The error that was raised from validating this was: %s" % (type(coordinates), coordinates, le))
+
+        if not (simplegeohandle is None or is_simplegeohandle(simplegeohandle)):
+            raise TypeError("The third argument, 'simplegeohandle' is required to be None or to match this regex: %s, but it was %s :: %r" % (SIMPLEGEOHANDLE_RSTR, type(simplegeohandle), simplegeohandle))
+
         record_id = properties and properties.get('record_id') or None
-        precondition(record_id is None or isinstance(record_id, basestring), "record_id is required to be None or a string.", record_id=record_id, properties=properties)
+        if not (record_id is None or isinstance(record_id, basestring)):
+            raise TypeError("record_id is required to be None or a string, but it was: %r :: %s." % (type(record_id), record_id))
         self.strict_lon_validation = strict_lon_validation
-        precondition(deep_validate_lat_lon(coordinates, strict_lon_validation=self.strict_lon_validation), coordinates)
+        precondition(coordinates)
         self.id = simplegeohandle
         self.coordinates = coordinates
         self.geomtype = geomtype
@@ -176,7 +183,10 @@ class Feature:
         """
         assert isinstance(data, dict), (type(data), repr(data))
         coordinates = deep_swap(data['geometry']['coordinates'])
-        precondition(deep_validate_lat_lon(coordinates, strict_lon_validation=strict_lon_validation), coordinates)
+        try:
+            deep_validate_lat_lon(coordinates, strict_lon_validation=strict_lon_validation)
+        except TypeError, le:
+            raise TypeError("The 'coordinates' value is required to be a 2-element sequence of lon, lat for a point (or a more complicated set of coordinates for polygons or multipolygons), but it was %s :: %r. The error that was raised from validating this was: %s" % (type(coordinates), coordinates, le))
         feature = cls(
             simplegeohandle = data.get('id'),
             coordinates = coordinates,
@@ -246,7 +256,8 @@ class Client(object):
 
     def get_feature(self, simplegeohandle):
         """Return the GeoJSON representation of a feature."""
-        precondition(is_simplegeohandle(simplegeohandle), "simplegeohandle is required to match the regex %s" % SIMPLEGEOHANDLE_RSTR, simplegeohandle=simplegeohandle)
+        if not is_simplegeohandle(simplegeohandle):
+            raise TypeError("simplegeohandle is required to match the regex %s, but it was %s :: %r" % (SIMPLEGEOHANDLE_RSTR, type(simplegeohandle), simplegeohandle))
         endpoint = self._endpoint('feature', simplegeohandle=simplegeohandle)
         return Feature.from_json(self._request(endpoint, 'GET')[1])
 
