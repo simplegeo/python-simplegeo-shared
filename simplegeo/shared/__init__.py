@@ -219,8 +219,6 @@ class Feature:
     def to_json(self):
         return json.dumps(self.to_dict())
 
-    def get_annotations(self):
-        return self.id
 
 class Client(object):
     realm = "http://api.simplegeo.com"
@@ -282,7 +280,6 @@ class Client(object):
         return json.loads(self._request(endpoint,
                                         'POST',
                                         data=json.dumps(data))[1])
-
 
     def _request(self, endpoint, method, data=None):
         """
