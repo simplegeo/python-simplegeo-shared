@@ -264,12 +264,19 @@ class Client(object):
         return Feature.from_json(self._request(endpoint, 'GET')[1])
 
     def get_annotations(self, simplegeohandle):
+        if not is_simplegeohandle(simplegeohandle):
+            raise TypeError("simplegeohandle is required to match the regex %s, but it was %s :: %r" % (SIMPLEGEOHANDLE_RSTR, type(simplegeohandle), simplegeohandle))
         endpoint = self._endpoint('annotations', simplegeohandle=simplegeohandle)
         return json.loads(self._request(endpoint, 'GET')[1])
 
     def annotate(self, simplegeohandle, annotations, private):
         if not isinstance(annotations, dict):
             raise TypeError('annotations must be of type dict')
+        if not len(annotations.keys()):
+            raise ValueError('annotations dict is empty')
+        for annotation_type in annotations.keys():
+            if not len(annotations[annotation_type].keys()):
+                raise ValueError('annotation type "%s" is empty' % annotation_type)
         if not isinstance(private, bool):
             raise TypeError('private must be of type bool')
 

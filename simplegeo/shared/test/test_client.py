@@ -210,3 +210,117 @@ EXAMPLE_POINT_BODY="""
 EXAMPLE_BODY="""
 {"geometry":{"type":"Polygon","coordinates":[[[-86.3672637,33.4041157],[-86.3676356,33.4039745],[-86.3681259,33.40365],[-86.3685992,33.4034242],[-86.3690556,33.4031137],[-86.3695121,33.4027609],[-86.3700361,33.4024363],[-86.3705601,33.4021258],[-86.3710166,33.4018012],[-86.3715575,33.4014061],[-86.3720647,33.4008557],[-86.3724366,33.4005311],[-86.3730621,33.3998395],[-86.3733156,33.3992891],[-86.3735523,33.3987811],[-86.3737383,33.3983153],[-86.3739073,33.3978355],[-86.374144,33.3971016],[-86.3741609,33.3968758],[-86.3733494,33.3976943],[-86.3729606,33.3980189],[-86.3725211,33.3984141],[-86.3718111,33.3990069],[-86.3713378,33.399402],[-86.370949,33.3997266],[-86.3705094,33.3999948],[-86.3701206,33.4003899],[-86.3697487,33.4007287],[-86.369157,33.4012791],[-86.3687682,33.401646],[-86.3684132,33.4019847],[-86.368092,33.4023798],[-86.3676694,33.4028738],[-86.3674835,33.4033113],[-86.3672975,33.4037487],[-86.3672637,33.4041157],[-86.3672637,33.4041157]]]},"type":"Feature","properties":{"category":"Island","license":"http://creativecommons.org/licenses/by-sa/2.0/","handle":"SG_4b10i9vCyPnKAYiYBLKZN7_33.400800_-86.370802","subcategory":"","name":"Elliott Island","attribution":"(c) OpenStreetMap (http://openstreetmap.org/) and contributors CC-BY-SA (http://creativecommons.org/licenses/by-sa/2.0/)","type":"Physical Feature","abbr":""},"id":"SG_4b10i9vCyPnKAYiYBLKZN7"}
 """
+
+class TestAnnotations(unittest.TestCase):
+
+    def setUp(self):
+        self.client = Client(MY_OAUTH_KEY, MY_OAUTH_SECRET, API_VERSION, API_HOST, API_PORT)
+        self.handle = 'SG_4H2GqJDZrc0ZAjKGR8qM4D'
+
+    def test_get_annotations(self):
+        mockhttp = mock.Mock()
+        headers = {'status': '200', 'content-type': 'application/json'}
+        mockhttp.request.return_value = (headers, json.dumps(EXAMPLE_ANNOTATIONS_RESPONSE))
+        self.client.http = mockhttp
+
+        res = self.client.get_annotations(self.handle)
+
+        self.assertEqual(mockhttp.method_calls[0][0], 'request')
+        self.assertEqual(mockhttp.method_calls[0][1][0], 'http://api.simplegeo.com:80/%s/features/%s/annotations.json' % (API_VERSION, self.handle))
+        self.assertEqual(mockhttp.method_calls[0][1][1], 'GET')
+
+        # Make sure client returns a dict.
+        self.failUnless(isinstance(res, dict))
+
+    def test_get_annotations_bad_handle(self):
+        try:
+            self.client.get_annotations('bad_handle')
+        except TypeError, e:
+            self.failUnless(str(e).startswith('simplegeohandle is required to match the regex'))
+        else:
+            self.fail('Should have raised exception.')
+
+    def test_annotate(self):
+        mockhttp = mock.Mock()
+        headers = {'status': '200', 'content-type': 'application/json'}
+        mockhttp.request.return_value = (headers, json.dumps(EXAMPLE_ANNOTATE_RESPONSE))
+        self.client.http = mockhttp
+
+        res = self.client.annotate(self.handle, EXAMPLE_ANNOTATIONS, True)
+
+        self.assertEqual(mockhttp.method_calls[0][0], 'request')
+        self.assertEqual(mockhttp.method_calls[0][1][0], 'http://api.simplegeo.com:80/%s/features/%s/annotations.json' % (API_VERSION, self.handle))
+        self.assertEqual(mockhttp.method_calls[0][1][1], 'POST')
+
+        # Make sure client returns a dict.
+        self.failUnless(isinstance(res, dict))
+
+    def test_annotate_bad_annotations_type(self):
+        annotations = 'not_a_dict'
+        try:
+            self.client.annotate(self.handle, annotations, True)
+        except TypeError, e:
+            self.failUnless(str(e) == 'annotations must be of type dict')
+        else:
+            self.fail('Should have raised exception.')
+
+    def test_annotate_empty_annotations_dict(self):
+        annotations = {}
+        try:
+            self.client.annotate(self.handle, annotations, True)
+        except ValueError, e:
+            self.failUnless(str(e) == 'annotations dict is empty')
+        else:
+            self.fail('Should have raised exception.')
+
+    def test_annotate_empty_annotations_dict(self):
+        annotations = {
+            'annotation_type_1': {
+                'foo': 'bar'},
+            'annotation_type_2': {
+                }
+            }
+        try:
+            self.client.annotate(self.handle, annotations, True)
+        except ValueError, e:
+            self.failUnless(str(e) == 'annotation type "annotation_type_2" is empty')
+        else:
+            self.fail('Should have raised exception.')
+
+    def test_annotate_empty_annotations_dict(self):
+        try:
+            self.client.annotate(self.handle, EXAMPLE_ANNOTATIONS, 'not_a_bool')
+        except TypeError, e:
+            self.failUnless(str(e) == 'private must be of type bool')
+        else:
+            self.fail('Should have raised exception.')
+
+
+EXAMPLE_ANNOTATIONS_RESPONSE = {
+    'private': {
+        'venue': {
+            'profitable': 'yes',
+            'owner': 'John Doe'},
+        'building': {
+            'condition': 'poor'}
+        },
+    'public': {
+        'venue': {
+            'capacity': '28,037',
+            'activity': 'sports'},
+        'building': {
+            'size': 'extra small',
+            'material': 'wood',
+            'ground': 'grass'}
+        }
+    }
+
+EXAMPLE_ANNOTATIONS = {
+    'venue': {
+        'profitable': 'yes',
+        'owner': 'John Doe'},
+    'building': {
+        'condition': 'poor'}
+    }
+
+EXAMPLE_ANNOTATE_RESPONSE = {'status': 'success'}
