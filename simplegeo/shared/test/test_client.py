@@ -273,7 +273,7 @@ class TestAnnotations(unittest.TestCase):
         else:
             self.fail('Should have raised exception.')
 
-    def test_annotate_empty_annotations_dict(self):
+    def test_annotate_empty_annotation_type_dict(self):
         annotations = {
             'annotation_type_1': {
                 'foo': 'bar'},
@@ -287,7 +287,7 @@ class TestAnnotations(unittest.TestCase):
         else:
             self.fail('Should have raised exception.')
 
-    def test_annotate_empty_annotations_dict(self):
+    def test_annotate_private_type(self):
         try:
             self.client.annotate(self.handle, EXAMPLE_ANNOTATIONS, 'not_a_bool')
         except TypeError, e:
