@@ -219,10 +219,12 @@ class Feature:
     def to_json(self):
         return json.dumps(self.to_dict())
 
+
 class Client(object):
     realm = "http://api.simplegeo.com"
     endpoints = {
         'feature': 'features/%(simplegeohandle)s.json',
+        'annotations': 'features/%(simplegeohandle)s/annotations.json',
     }
 
     def __init__(self, key, secret, api_version=API_VERSION, host="api.simplegeo.com", port=80):
@@ -260,6 +262,31 @@ class Client(object):
             raise TypeError("simplegeohandle is required to match the regex %s, but it was %s :: %r" % (SIMPLEGEOHANDLE_RSTR, type(simplegeohandle), simplegeohandle))
         endpoint = self._endpoint('feature', simplegeohandle=simplegeohandle)
         return Feature.from_json(self._request(endpoint, 'GET')[1])
+
+    def get_annotations(self, simplegeohandle):
+        if not is_simplegeohandle(simplegeohandle):
+            raise TypeError("simplegeohandle is required to match the regex %s, but it was %s :: %r" % (SIMPLEGEOHANDLE_RSTR, type(simplegeohandle), simplegeohandle))
+        endpoint = self._endpoint('annotations', simplegeohandle=simplegeohandle)
+        return json.loads(self._request(endpoint, 'GET')[1])
+
+    def annotate(self, simplegeohandle, annotations, private):
+        if not isinstance(annotations, dict):
+            raise TypeError('annotations must be of type dict')
+        if not len(annotations.keys()):
+            raise ValueError('annotations dict is empty')
+        for annotation_type in annotations.keys():
+            if not len(annotations[annotation_type].keys()):
+                raise ValueError('annotation type "%s" is empty' % annotation_type)
+        if not isinstance(private, bool):
+            raise TypeError('private must be of type bool')
+
+        data = {'annotations': annotations,
+                'private': private}
+
+        endpoint = self._endpoint('annotations', simplegeohandle=simplegeohandle)
+        return json.loads(self._request(endpoint,
+                                        'POST',
+                                        data=json.dumps(data))[1])
 
     def _request(self, endpoint, method, data=None):
         """
