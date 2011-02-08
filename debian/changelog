@@ -1,3 +1,15 @@
+python-simplegeo-shared (2.5.79) lucid; urgency=low
+
+  [ Ben Standefer ]
+  * Add annotations endpoint.
+  * Add annotations endpoint.
+  * Add validation and tests for annotations.
+  * Fix function names in annotations tests.
+
+  [ SimpleGeo Nerds ]
+
+ -- SimpleGeo Nerds <nerds@simplegeo.com>  Tue, 08 Feb 2011 17:31:57 +0000
+
 python-simplegeo-shared (2.5.78) lucid; urgency=low
 
   * UNRELEASED
