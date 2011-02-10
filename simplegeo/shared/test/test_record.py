@@ -1,4 +1,5 @@
 import unittest
+import re
 from simplegeo.shared import Feature, deep_swap
 from decimal import Decimal as D
 
@@ -49,6 +50,14 @@ class FeatureTest(unittest.TestCase):
             Feature(coordinates=[-90, D('361.0')], properties={'record_id': 'my_id'})
         except TypeError, e:
             self.failUnless('361' in str(e), str(e))
+        else:
+            self.fail('Should have raised exception.')
+
+        try:
+            Feature(coordinates=['-90', D('361.0')], properties={'record_id': 'my_id'})
+        except TypeError, e:
+            err_msg_re = re.compile("argument is required to be.*number.*not: .*<type 'str'")
+            self.failUnless(err_msg_re.search(str(e)), str(e))
         else:
             self.fail('Should have raised exception.')
 
