@@ -1,3 +1,15 @@
+python-simplegeo-shared (2.5.80) lucid; urgency=low
+
+  [ Zooko Ofsimplegeo ]
+  * add test that the geojson produced has coords as numbers, not as
+    strings Wade reported that our python client is submitting coords as
+    strings. This test shows that the problem isn't the Feature class
+    (which uses pyutil.jsonutil) serializing the coords incorrectly.
+
+  [ SimpleGeo Nerds ]
+
+ -- SimpleGeo Nerds <nerds@simplegeo.com>  Thu, 10 Feb 2011 22:47:00 +0000
+
 python-simplegeo-shared (2.5.79) lucid; urgency=low
 
   [ Ben Standefer ]
