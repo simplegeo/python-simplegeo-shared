@@ -1,3 +1,15 @@
+python-simplegeo-shared (2.5.81) lucid; urgency=low
+
+  [ Zooko Ofsimplegeo ]
+  * add test that shows Feature class rejects coords which aren't
+    numbers when it is constructed So this is another thing that could
+    have caused the misbehavior Wade saw -- a client sending GeoJSON
+    with strings for coords -- but didn't.
+
+  [ SimpleGeo Nerds ]
+
+ -- SimpleGeo Nerds <nerds@simplegeo.com>  Thu, 10 Feb 2011 22:59:00 +0000
+
 python-simplegeo-shared (2.5.80) lucid; urgency=low
 
   [ Zooko Ofsimplegeo ]
