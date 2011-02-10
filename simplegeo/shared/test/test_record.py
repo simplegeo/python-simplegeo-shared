@@ -4,6 +4,11 @@ from decimal import Decimal as D
 
 class FeatureTest(unittest.TestCase):
 
+    def test_geojson_is_correct(self):
+        f = Feature(coordinates=[-90, D('171.0')], properties={'record_id': 'my_id'}, strict_lon_validation=True)
+        stringy = f.to_json()
+        self.failUnlessEqual(stringy, '{"geometry": {"type": "Point", "coordinates": [171.0, -90]}, "type": "Feature", "id": null, "properties": {"record_id": "my_id", "private": false}}')
+
     def test_swapper(self):
         t1 = (2, 1)
         self.failUnlessEqual(deep_swap(t1), (1, 2))
